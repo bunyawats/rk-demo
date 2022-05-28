@@ -201,7 +201,7 @@ $ curl -X GET localhost:8080/rk/v1/alive
 
 func registerGreeter(server *grpc.Server) {
     greeter.RegisterGreeterServer(server, &GreeterServer{})
-    **reflection.Register(server)**
+    reflection.Register(server)
 }
 ```
 
