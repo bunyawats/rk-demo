@@ -198,30 +198,30 @@ $ curl -X GET localhost:8080/rk/v1/alive
 
 
 
-func registerGreeter(server *grpc.Server) {
-    greeter.RegisterGreeterServer(server, &GreeterServer{})
-    reflection.Register(server)
+func registerGreeter(server *grpc.Server) {\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;greeter.RegisterGreeterServer(server, &GreeterServer{})\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reflection.Register(server)\
 }
 
 
 go install \
-    github.com/rookie-ninja/rk/cmd/rk@latest
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;github.com/rookie-ninja/rk/cmd/rk@latest
 
 go install \
-    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
-    github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \
-    google.golang.org/protobuf/cmd/protoc-gen-go \
-    google.golang.org/grpc/cmd/protoc-gen-go-grpc
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2 \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;google.golang.org/protobuf/cmd/protoc-gen-go \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
-brew install grpcurl
+brew install grpcurl\
 grpcurl -v -d '{"name":"bunyawat"}' -plaintext localhost:8080 api.v1.Greeter.Hello
 
-brew install grpcui
+brew install grpcui\
 grpcui -plaintext localhost:8080
 
-brew tap ktr0731/evans
-brew install evans
-evans -p 8080 -r
--show service
--service Greeter
+brew tap ktr0731/evans\
+brew install evans\
+evans -p 8080 -r\
+-show service\
+-service Greeter\
 -call Hello
