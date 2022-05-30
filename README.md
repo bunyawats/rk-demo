@@ -218,6 +218,8 @@ go install \
     google.golang.org/protobuf/cmd/protoc-gen-go 
     google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
+brew install bufbuild/buf/buf
+
 brew install grpcurl
 grpcurl -v -d '{"name":"bunyawat"}' -plaintext localhost:8080 api.v1.Greeter.Hello
 
