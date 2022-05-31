@@ -9,7 +9,7 @@ import (
 	"context"
 	"github.com/rookie-ninja/rk-boot/v2"
 	"github.com/rookie-ninja/rk-demo/api/gen/v1"
-	"github.com/rookie-ninja/rk-demo/impl"
+	"github.com/rookie-ninja/rk-demo/api/v1/impl"
 	"github.com/rookie-ninja/rk-grpc/v2/boot"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
