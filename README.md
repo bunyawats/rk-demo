@@ -234,3 +234,8 @@ evans -p 8080 -r
 -call Hello
 
 ```
+
+```go
+$ go run cmd/customer_client.go
+```
+

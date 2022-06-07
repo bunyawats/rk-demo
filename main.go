@@ -32,5 +32,6 @@ func main() {
 
 func registerGreeter(server *grpc.Server) {
 	greeter.RegisterGreeterServer(server, &v1.GreeterServer{})
+	greeter.RegisterCustomerServer(server, &v1.CustomerServer{})
 	reflection.Register(server)
 }
