@@ -36,26 +36,15 @@ func NewCustomerServer(cx context.Context, dbs *service.DbService) *CustomerServ
 	}
 }
 
-func (server *CustomerServer) Create(
-	_ context.Context, request *greeter.CreateRequest) (*greeter.CreateResponse, error) {
-
-	return nil, nil
-}
-
 func (server *CustomerServer) ReadAll(
-	_ context.Context, request *greeter.ReadAllRequest) (*greeter.ReadAllResponse, error) {
-
-	// Using mock data
-	res := &greeter.ReadAllResponse{
-		CustomerList: staticCustomerList,
-	}
+	_ context.Context, _ *greeter.ReadAllRequest) (*greeter.ReadAllResponse, error) {
 
 	customerList, err := server.dbService.SelectAll()
 	if err != nil {
 		log.Println(err.Error())
+		return nil, err
 	}
 
-	// Using data from MySql database
 	cusListFromDB := make([]*greeter.CustomerModel, 0)
 	for _, cus := range customerList {
 		cusListFromDB = append(cusListFromDB, &greeter.CustomerModel{
@@ -64,11 +53,16 @@ func (server *CustomerServer) ReadAll(
 			Age:       int32(cus.Age),
 		})
 	}
-	res = &greeter.ReadAllResponse{
-		CustomerList: cusListFromDB,
-	}
 
-	return res, nil
+	return &greeter.ReadAllResponse{
+		CustomerList: cusListFromDB,
+	}, nil
+}
+
+func (server *CustomerServer) Create(
+	_ context.Context, request *greeter.CreateRequest) (*greeter.CreateResponse, error) {
+
+	return nil, nil
 }
 
 func (server *CustomerServer) Update(

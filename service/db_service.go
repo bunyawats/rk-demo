@@ -7,6 +7,15 @@ import (
 	"log"
 )
 
+const (
+	driverName = "mysql"
+
+	// "test:test@tcp(127.0.0.1:3306)/test"
+	dataSourceNameTemplate = "%v:%v@tcp(%v)/%v"
+
+	selectAllSql = "SELECT fname, lname, age FROM customer"
+)
+
 type (
 	DbService struct {
 		db *sql.DB
@@ -28,17 +37,14 @@ type (
 
 func NewDbService(dbCfg *DbConnCfg) (*DbService, error) {
 
-	// "test:test@tcp(127.0.0.1:3306)/test"
-	dataSourceName := fmt.Sprintf("%v:%v@tcp(%v)/%v",
+	dataSourceName := fmt.Sprintf(dataSourceNameTemplate,
 		dbCfg.DbUsername,
 		dbCfg.DbPassword,
 		dbCfg.DbHost,
 		dbCfg.DbName)
 	log.Print("dataSourceName: ", dataSourceName)
 
-	d, err := sql.Open("mysql", dataSourceName)
-
-	// if there is an error opening the connection, handle it
+	d, err := sql.Open(driverName, dataSourceName)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +62,7 @@ func (s *DbService) SelectAll() ([]*CustomerRecord, error) {
 	fmt.Println("Call DbService.SelectAll")
 
 	// Execute the query
-	results, err := s.db.Query("SELECT fname, lname, age FROM customer")
+	results, err := s.db.Query(selectAllSql)
 	if err != nil {
 		return nil, err
 	}
