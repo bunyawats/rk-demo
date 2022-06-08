@@ -12,27 +12,48 @@ import (
 	"github.com/rookie-ninja/rk-demo/api/impl/v1"
 	"github.com/rookie-ninja/rk-demo/service"
 	"github.com/rookie-ninja/rk-grpc/v2/boot"
+	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"log"
+)
+
+const (
+	configFileName = ".env"
+
+	dbUsername = "DB_USERNAME"
+	dbPassword = "DB_PASSWORD"
+	dbHost     = "DB_HOSTNAME"
+	dbName     = "DB_NAME"
 )
 
 var (
 	dbService *service.DbService
 	err       error
-
-	db_username = "test"
-	db_password = "test"
-	db_host     = "127.0.0.1:3306"
-	db_name     = "test"
 )
+
+func viperEnvVariable(key string) string {
+
+	value, ok := viper.Get(key).(string)
+	if !ok {
+		log.Fatalf("Invalid type assertion")
+	}
+	return value
+}
 
 func init() {
 
+	viper.SetConfigFile(configFileName)
+	err := viper.ReadInConfig()
+	if err != nil {
+		log.Fatalf("Error while reading config file %s", err)
+	}
+
 	dbService, err = service.NewDbService(&service.DbConnCfg{
-		DbUsername: db_username,
-		DbPassword: db_password,
-		DbHost:     db_host,
-		DbName:     db_name,
+		DbUsername: viperEnvVariable(dbUsername),
+		DbPassword: viperEnvVariable(dbPassword),
+		DbHost:     viperEnvVariable(dbHost),
+		DbName:     viperEnvVariable(dbName),
 	})
 	if err != nil {
 		panic(error.Error)

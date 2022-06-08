@@ -241,5 +241,6 @@ $ go run cmd/customer_client.go
 
 ```go
 $ go get github.com/go-sql-driver/mysql
+$ go get github.com/spf13/viper
 ```
 
