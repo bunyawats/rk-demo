@@ -45,6 +45,7 @@ func (server *CustomerServer) Create(
 func (server *CustomerServer) ReadAll(
 	_ context.Context, request *greeter.ReadAllRequest) (*greeter.ReadAllResponse, error) {
 
+	// Using mock data
 	res := &greeter.ReadAllResponse{
 		CustomerList: staticCustomerList,
 	}
@@ -54,6 +55,7 @@ func (server *CustomerServer) ReadAll(
 		log.Println(err.Error())
 	}
 
+	// Using data from MySql database
 	cusListFromDB := make([]*greeter.CustomerModel, 0)
 	for _, cus := range customerList {
 		cusListFromDB = append(cusListFromDB, &greeter.CustomerModel{

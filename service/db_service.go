@@ -26,6 +26,7 @@ func NewDbService(d *sql.DB) *DbService {
 }
 
 func (s *DbService) Close() {
+	log.Println("closing database")
 	s.db.Close()
 }
 
