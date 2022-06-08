@@ -11,6 +11,13 @@ type (
 		db *sql.DB
 	}
 
+	DbConnCfg struct {
+		DbUsername string
+		DbPassword string
+		DbHost     string
+		DbName     string
+	}
+
 	CustomerRecord struct {
 		Fname string
 		Lname string
@@ -18,11 +25,24 @@ type (
 	}
 )
 
-func NewDbService(d *sql.DB) *DbService {
+func NewDbService(dbCfg *DbConnCfg) (*DbService, error) {
 
-	return &DbService{
-		db: d,
+	// "test:test@tcp(127.0.0.1:3306)/test"
+	dataSourceName := fmt.Sprintf("%v:%v@tcp(%v)/%v",
+		dbCfg.DbUsername,
+		dbCfg.DbPassword,
+		dbCfg.DbHost,
+		dbCfg.DbName)
+	log.Print("dataSourceName: ", dataSourceName)
+
+	d, err := sql.Open("mysql", dataSourceName)
+
+	// if there is an error opening the connection, handle it
+	if err != nil {
+		return nil, err
 	}
+
+	return &DbService{db: d}, nil
 }
 
 func (s *DbService) Close() {

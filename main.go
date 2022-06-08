@@ -7,7 +7,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/rookie-ninja/rk-boot/v2"
 	"github.com/rookie-ninja/rk-demo/api/gen/v1"
@@ -20,18 +19,25 @@ import (
 
 var (
 	dbService *service.DbService
+	err       error
+
+	db_username = "test"
+	db_password = "test"
+	db_host     = "127.0.0.1:3306"
+	db_name     = "test"
 )
 
 func init() {
 
-	db, err := sql.Open("mysql", "test:test@tcp(127.0.0.1:3306)/test")
-
-	// if there is an error opening the connection, handle it
+	dbService, err = service.NewDbService(&service.DbConnCfg{
+		DbUsername: db_username,
+		DbPassword: db_password,
+		DbHost:     db_host,
+		DbName:     db_name,
+	})
 	if err != nil {
-		panic(err.Error())
+		panic(error.Error)
 	}
-
-	dbService = service.NewDbService(db)
 }
 
 func main() {
