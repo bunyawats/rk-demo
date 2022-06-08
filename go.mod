@@ -3,6 +3,7 @@ module github.com/rookie-ninja/rk-demo
 go 1.18
 
 require (
+	github.com/go-sql-driver/mysql v1.6.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.10.3
 	github.com/rookie-ninja/rk-boot/v2 v2.2.1
 	github.com/rookie-ninja/rk-grpc/v2 v2.2.1
@@ -53,7 +54,7 @@ require (
 	golang.org/x/net v0.0.0-20220607020251-c690dde0001d // indirect
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
 	golang.org/x/text v0.3.7 // indirect
-	google.golang.org/genproto v0.0.0-20220602131408-e326c6e8e9c8 // indirect
+	google.golang.org/genproto v0.0.0-20220607223854-30acc4cbd2aa // indirect
 	gopkg.in/ini.v1 v1.66.6 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

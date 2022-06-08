@@ -239,3 +239,7 @@ evans -p 8080 -r
 $ go run cmd/customer_client.go
 ```
 
+```go
+$ go get github.com/go-sql-driver/mysql
+```
+
