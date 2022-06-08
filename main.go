@@ -7,7 +7,6 @@ package main
 
 import (
 	"context"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/rookie-ninja/rk-boot/v2"
 	"github.com/rookie-ninja/rk-demo/api/gen/v1"
 	"github.com/rookie-ninja/rk-demo/api/impl/v1"
