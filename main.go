@@ -32,15 +32,6 @@ var (
 	err       error
 )
 
-func viperEnvVariable(key string) string {
-
-	value, ok := viper.Get(key).(string)
-	if !ok {
-		log.Fatalf("Invalid type assertion")
-	}
-	return value
-}
-
 func init() {
 
 	viper.SetConfigFile(configFileName)
@@ -50,10 +41,10 @@ func init() {
 	}
 
 	dbService, err = service.NewDbService(&service.DbConnCfg{
-		DbUsername: viperEnvVariable(dbUsername),
-		DbPassword: viperEnvVariable(dbPassword),
-		DbHost:     viperEnvVariable(dbHost),
-		DbName:     viperEnvVariable(dbName),
+		DbUsername: viper.GetString(dbUsername),
+		DbPassword: viper.GetString(dbPassword),
+		DbHost:     viper.GetString(dbHost),
+		DbName:     viper.GetString(dbName),
 	})
 	if err != nil {
 		panic(error.Error)
