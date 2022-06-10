@@ -1,5 +1,8 @@
 
-FROM golang:latest
+##
+## Build
+##
+FROM golang:latest AS build
 
 WORKDIR /app
 
@@ -15,5 +18,20 @@ COPY api ./api
 COPY service ./service
 
 RUN go build -o /rk-demo-app
+
+##
+## Deploy
+##
+FROM gcr.io/distroless/base-debian10
+
+WORKDIR /
+
+COPY --from=build /rk-demo-app /rk-demo-app
+COPY *.env ./
+COPY *.yaml ./
+
+EXPOSE 8080
+
+USER root:root
 
 CMD [ "/rk-demo-app" ]

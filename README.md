@@ -244,7 +244,8 @@ $ go get github.com/go-sql-driver/mysql
 $ go get github.com/spf13/viper
 ```
 
-docker build -t rk-demo-app .
-
+docker build -t rk-demo-app . \
+docker image ls \
+docker run --publish 8080:8080 rk-demo-app \
 docker container ls  \
 docker inspect rk-demo-grpc-app-1 | grep Gateway
