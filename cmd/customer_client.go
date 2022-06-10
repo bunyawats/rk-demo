@@ -7,6 +7,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
+	"math/rand"
+	"time"
 )
 
 func main() {
@@ -23,17 +25,62 @@ func main() {
 	c := greeter.NewCustomerClient(cc)
 	//fmt.Printf("Create client %f\n\n", c)
 
-	doCustomerUnary(c)
+	rand.Seed(time.Now().UnixNano())
+	cusId := createNewCustomer(c)
+	cusId = createNewCustomer(c)
+	getAllCustomer(c)
+	updateExistCustomer(c, cusId)
+	getAllCustomer(c)
+	deleteExistCustomer(c, cusId-1)
+	getAllCustomer(c)
 }
 
-func doCustomerUnary(c greeter.CustomerClient) {
+func deleteExistCustomer(c greeter.CustomerClient, id int32) {
+	res, err := c.Delete(context.Background(), &greeter.DeleteRequest{
+		CusId: id,
+	})
+	if err != nil {
+		log.Fatalf("error while calling Customer.Delete RPC: %v\n", err)
+	}
+	fmt.Printf("Response from Customer.Delete: %v\n", res.DeletedCount)
+}
 
-	fmt.Println("Start to do a ReadAll RPC...")
+func updateExistCustomer(c greeter.CustomerClient, id int32) {
+	res, err := c.Update(context.Background(), &greeter.UpdateRequest{
+		Customer: &greeter.CustomerModel{
+			CusId:     id,
+			FirstName: "Bunyawat 13",
+			LastName:  "Singchai13",
+			Age:       int32(rand.Intn(100)),
+		},
+	})
+	if err != nil {
+		log.Fatalf("error while calling Customer.Update RPC: %v\n", err)
+	}
+	fmt.Printf("Response from Customer.Update: %v\n", res.UpdatedCount)
+}
+
+func createNewCustomer(c greeter.CustomerClient) int32 {
+
+	res, err := c.Create(context.Background(), &greeter.CreateRequest{
+		FirstName: "Bunyawat 12",
+		LastName:  "Singchai12",
+		Age:       int32(rand.Intn(100)),
+	})
+	if err != nil {
+		log.Fatalf("error while calling Customer.Create RPC: %v\n", err)
+	}
+	fmt.Printf("Response from Customer.Create: %v\n", res.Customer)
+
+	return res.Customer.CusId
+}
+
+func getAllCustomer(c greeter.CustomerClient) {
 
 	res, err := c.ReadAll(context.Background(), &greeter.ReadAllRequest{})
 	if err != nil {
-		log.Fatalf("error while calling Greet RPC: %v\n", err)
+		log.Fatalf("error while calling Customer.ReadAll RPC: %v\n", err)
 	}
-	fmt.Printf("Response from Greet: %v\n", res.CustomerList)
+	fmt.Printf("Response from Customer.ReadAll: %v\n", res.CustomerList)
 
 }

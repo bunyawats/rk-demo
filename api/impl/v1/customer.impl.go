@@ -62,17 +62,54 @@ func (server *CustomerServer) ReadAll(
 func (server *CustomerServer) Create(
 	_ context.Context, request *greeter.CreateRequest) (*greeter.CreateResponse, error) {
 
-	return nil, nil
+	cusId, err := server.dbService.InsertNewCustomer(&service.CustomerRecord{
+		Fname: request.FirstName,
+		Lname: request.LastName,
+		Age:   int(request.Age),
+	})
+	if err != nil {
+		log.Println(err.Error())
+		return nil, err
+	}
+
+	return &greeter.CreateResponse{
+		Customer: &greeter.CustomerModel{
+			CusId:     cusId,
+			FirstName: request.FirstName,
+			LastName:  request.LastName,
+			Age:       request.Age,
+		},
+	}, nil
 }
 
 func (server *CustomerServer) Update(
 	_ context.Context, request *greeter.UpdateRequest) (*greeter.UpdateResponse, error) {
 
-	return nil, nil
+	reqCus := request.Customer
+	rowsAffected, err := server.dbService.UpdateCustomer(&service.CustomerRecord{
+		CusId: reqCus.CusId,
+		Fname: reqCus.FirstName,
+		Lname: reqCus.LastName,
+		Age:   int(reqCus.Age),
+	})
+	if err != nil {
+		log.Println(err.Error())
+		return nil, err
+	}
+	return &greeter.UpdateResponse{
+		UpdatedCount: rowsAffected,
+	}, nil
 }
 
 func (server *CustomerServer) Delete(
 	_ context.Context, request *greeter.DeleteRequest) (*greeter.DeleteResponse, error) {
 
-	return nil, nil
+	rowsAffected, err := server.dbService.DeleteCustomer(request.CusId)
+	if err != nil {
+		log.Println(err.Error())
+		return nil, err
+	}
+	return &greeter.DeleteResponse{
+		DeletedCount: rowsAffected,
+	}, nil
 }

@@ -13,7 +13,10 @@ const (
 	// "test:test@tcp(127.0.0.1:3306)/test"
 	dataSourceNameTemplate = "%v:%v@tcp(%v)/%v"
 
-	selectAllSql = "SELECT fname, lname, age FROM customer"
+	selectAllCustomer      = "SELECT fname, lname, age FROM customer"
+	insertNewCustomer      = "INSERT INTO customer(fname, lname, age) VALUES(?, ?, ?)"
+	updateExistingCustomer = "UPDATE customer SET fname=?,  lname=?,  age=? WHERE cusid=?"
+	deleteExistingCustomer = "DELETE FROM customer WHERE cusid=?"
 )
 
 type (
@@ -29,6 +32,7 @@ type (
 	}
 
 	CustomerRecord struct {
+		CusId int32
 		Fname string
 		Lname string
 		Age   int
@@ -62,10 +66,11 @@ func (s *DbService) SelectAll() ([]*CustomerRecord, error) {
 	fmt.Println("Call DbService.SelectAll")
 
 	// Execute the query
-	results, err := s.db.Query(selectAllSql)
+	results, err := s.db.Query(selectAllCustomer)
 	if err != nil {
 		return nil, err
 	}
+	defer results.Close()
 
 	customerList := make([]*CustomerRecord, 0)
 	for results.Next() {
@@ -82,4 +87,82 @@ func (s *DbService) SelectAll() ([]*CustomerRecord, error) {
 	}
 	return customerList, nil
 
+}
+
+func (s *DbService) InsertNewCustomer(cus *CustomerRecord) (int32, error) {
+
+	fmt.Println("Call DbService.InsertNewCustomer")
+
+	insertSmt, err := s.db.Prepare(insertNewCustomer)
+	if err != nil {
+		return -1, err
+	}
+	defer insertSmt.Close()
+
+	results, err := insertSmt.Exec(
+		cus.Fname,
+		cus.Lname,
+		cus.Age,
+	)
+	if err != nil {
+		return -1, err
+	}
+
+	cusId, err := results.LastInsertId()
+	if err != nil {
+		return -1, err
+	}
+
+	return int32(cusId), nil
+}
+
+func (s *DbService) UpdateCustomer(cus *CustomerRecord) (int32, error) {
+
+	fmt.Println("Call DbService.UpdateCustomer")
+
+	updateSmt, err := s.db.Prepare(updateExistingCustomer)
+	if err != nil {
+		return -1, err
+	}
+	defer updateSmt.Close()
+
+	results, err := updateSmt.Exec(
+		cus.Fname,
+		cus.Lname,
+		cus.Age,
+		cus.CusId,
+	)
+	if err != nil {
+		return -1, err
+	}
+
+	rowsAffected, err := results.RowsAffected()
+	if err != nil {
+		return -1, err
+	}
+
+	return int32(rowsAffected), nil
+}
+
+func (s *DbService) DeleteCustomer(cusId int32) (int32, error) {
+
+	fmt.Println("Call DbService.DeleteCustomer")
+
+	deleteSmt, err := s.db.Prepare(deleteExistingCustomer)
+	if err != nil {
+		return -1, err
+	}
+	defer deleteSmt.Close()
+
+	results, err := deleteSmt.Exec(cusId)
+	if err != nil {
+		return -1, err
+	}
+
+	rowsAffected, err := results.RowsAffected()
+	if err != nil {
+		return -1, err
+	}
+
+	return int32(rowsAffected), nil
 }
