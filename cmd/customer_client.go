@@ -46,12 +46,15 @@ func deleteExistCustomer(c greeter.CustomerClient, id int32) {
 }
 
 func updateExistCustomer(c greeter.CustomerClient, id int32) {
+
+	ranNumber := int32(rand.Intn(100))
+
 	res, err := c.Update(context.Background(), &greeter.UpdateRequest{
 		Customer: &greeter.CustomerModel{
 			CusId:     id,
-			FirstName: "Bunyawat 13",
-			LastName:  "Singchai13",
-			Age:       int32(rand.Intn(100)),
+			FirstName: fmt.Sprintf("%v_%v", "Bunyawat_", ranNumber),
+			LastName:  fmt.Sprintf("%v_%v", "Singchai", ranNumber),
+			Age:       ranNumber,
 		},
 	})
 	if err != nil {

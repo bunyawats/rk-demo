@@ -75,4 +75,6 @@ func registerGreeter(server *grpc.Server) {
 	greeter.RegisterGreeterServer(server, &v1.GreeterServer{})
 	greeter.RegisterCustomerServer(server, v1.NewCustomerServer(context.TODO(), dbService))
 	reflection.Register(server)
+
+	dbService.SelectAll()
 }
