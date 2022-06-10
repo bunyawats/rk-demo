@@ -50,9 +50,12 @@ func NewDbService(dbCfg *DbConnCfg) (*DbService, error) {
 
 	d, err := sql.Open(driverName, dataSourceName)
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
-
+	err = d.Ping()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 	return &DbService{db: d}, nil
 }
 

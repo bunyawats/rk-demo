@@ -246,7 +246,7 @@ $ go get github.com/spf13/viper
 
 docker build -t rk-demo-app . \
 docker image ls \
-docker run -e DB_HOSTNAME='localhot:3333' --publish 8080:8080 rk-demo-app \
+docker run -e DB_HOSTNAME='localhost:3333' --publish 8080:8080 rk-demo-app \
 docker container ls  \
 docker inspect rk-demo-grpc-app-1 | grep Gateway
 
