@@ -220,24 +220,41 @@ go install \
 
 brew install bufbuild/buf/buf
 
+```
+
+
+### Test gRPC services with GRPCURL
+
+```shell script
 brew install grpcurl
 grpcurl -v -d '{"name":"bunyawat"}' -plaintext localhost:8080 api.v1.Greeter.Hello
+```
 
+### Test gRPC services with GRPCUI
+
+```shell script
 brew install grpcui
 grpcui -plaintext localhost:8080
+```
 
+### Test gRPC services with EVANS
+
+```shell script
 brew tap ktr0731/evans
 brew install evans
 evans -p 8080 -r
 -show service
 -service Greeter
 -call Hello
-
 ```
+
+### Run gRPC client to call Customer service
 
 ```go
 $ go run cmd/customer_client.go
 ```
+
+### Use MySql database driver and Viper library
 
 ```go
 $ go get github.com/go-sql-driver/mysql
@@ -254,7 +271,7 @@ $ DB_HOSTNAME="localhost:3307" go run .
 ### Create and Run Docker image
 
 ```shell script
-docker build -t rk-demo-app . 
+
 docker image ls 
 docker run -e DB_HOSTNAME='host.docker.internal:3306' --publish 8080:8080 rk-demo-app 
 docker container ls  
