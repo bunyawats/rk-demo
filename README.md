@@ -244,9 +244,20 @@ $ go get github.com/go-sql-driver/mysql
 $ go get github.com/spf13/viper
 ```
 
-docker build -t rk-demo-app . \
-docker image ls \
-docker run -e DB_HOSTNAME='localhost:3333' --publish 8080:8080 rk-demo-app \
-docker container ls  \
+
+### Run with VIPER configuration loader
+
+```go
+$ DB_HOSTNAME="localhost:3307" go run .
+```
+
+### Create and Run Docker image
+
+```shell script
+docker build -t rk-demo-app . 
+docker image ls 
+docker run -e DB_HOSTNAME='host.docker.internal:3306' --publish 8080:8080 rk-demo-app 
+docker container ls  
 docker inspect rk-demo-grpc-app-1 | grep Gateway
+```
 
