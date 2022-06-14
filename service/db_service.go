@@ -8,11 +8,6 @@ import (
 )
 
 const (
-	driverName = "mysql"
-
-	// "test:test@tcp(127.0.0.1:3306)/test"
-	dataSourceNameTemplate = "%v:%v@tcp(%v)/%v"
-
 	selectAllCustomer      = "SELECT fname, lname, age FROM customer"
 	insertNewCustomer      = "INSERT INTO customer(fname, lname, age) VALUES(?, ?, ?)"
 	updateExistingCustomer = "UPDATE customer SET fname=?,  lname=?,  age=? WHERE cusid=?"
@@ -21,14 +16,7 @@ const (
 
 type (
 	DbService struct {
-		db *sql.DB
-	}
-
-	DbConnCfg struct {
-		DbUsername string
-		DbPassword string
-		DbHost     string
-		DbName     string
+		DB *sql.DB
 	}
 
 	CustomerRecord struct {
@@ -39,29 +27,9 @@ type (
 	}
 )
 
-func NewDbService(dbCfg *DbConnCfg) (*DbService, error) {
-
-	dataSourceName := fmt.Sprintf(dataSourceNameTemplate,
-		dbCfg.DbUsername,
-		dbCfg.DbPassword,
-		dbCfg.DbHost,
-		dbCfg.DbName)
-	log.Print("dataSourceName: ", dataSourceName)
-
-	d, err := sql.Open(driverName, dataSourceName)
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = d.Ping()
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	return &DbService{db: d}, nil
-}
-
 func (s *DbService) Close() {
 	log.Println("closing database")
-	s.db.Close()
+	s.DB.Close()
 }
 
 func (s *DbService) SelectAll() ([]*CustomerRecord, error) {
@@ -69,7 +37,7 @@ func (s *DbService) SelectAll() ([]*CustomerRecord, error) {
 	fmt.Println("Call DbService.SelectAll")
 
 	// Execute the query
-	results, err := s.db.Query(selectAllCustomer)
+	results, err := s.DB.Query(selectAllCustomer)
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +64,7 @@ func (s *DbService) InsertNewCustomer(cus *CustomerRecord) (int32, error) {
 
 	fmt.Println("Call DbService.InsertNewCustomer")
 
-	insertSmt, err := s.db.Prepare(insertNewCustomer)
+	insertSmt, err := s.DB.Prepare(insertNewCustomer)
 	if err != nil {
 		return -1, err
 	}
@@ -123,7 +91,7 @@ func (s *DbService) UpdateCustomer(cus *CustomerRecord) (int32, error) {
 
 	fmt.Println("Call DbService.UpdateCustomer")
 
-	updateSmt, err := s.db.Prepare(updateExistingCustomer)
+	updateSmt, err := s.DB.Prepare(updateExistingCustomer)
 	if err != nil {
 		return -1, err
 	}
@@ -151,7 +119,7 @@ func (s *DbService) DeleteCustomer(cusId int32) (int32, error) {
 
 	fmt.Println("Call DbService.DeleteCustomer")
 
-	deleteSmt, err := s.db.Prepare(deleteExistingCustomer)
+	deleteSmt, err := s.DB.Prepare(deleteExistingCustomer)
 	if err != nil {
 		return -1, err
 	}

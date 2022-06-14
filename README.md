@@ -221,6 +221,7 @@ go install \
 brew install bufbuild/buf/buf
 
 ```
+- https://docs.buf.build/installation
 
 
 ### Test gRPC services with GRPCURL
@@ -261,7 +262,6 @@ $ go get github.com/go-sql-driver/mysql
 $ go get github.com/spf13/viper
 ```
 
-
 ### Run with VIPER configuration loader
 
 ```go
@@ -278,3 +278,10 @@ docker container ls
 docker inspect rk-demo-grpc-app-1 | grep Gateway
 ```
 
+### Use sqlc library
+
+```go
+$ go install github.com/kyleconroy/sqlc/cmd/sqlc@latest
+$ sqlc generate
+```
+- https://docs.sqlc.dev/en/latest/overview/install.html

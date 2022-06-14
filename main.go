@@ -7,9 +7,11 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"github.com/rookie-ninja/rk-boot/v2"
 	"github.com/rookie-ninja/rk-demo/api/gen/v1"
 	"github.com/rookie-ninja/rk-demo/api/impl/v1"
+	"github.com/rookie-ninja/rk-demo/repository"
 	"github.com/rookie-ninja/rk-demo/service"
 	"github.com/rookie-ninja/rk-grpc/v2/boot"
 	"github.com/spf13/viper"
@@ -28,8 +30,10 @@ const (
 )
 
 var (
-	dbService *service.DbService
-	err       error
+	db          *sql.DB
+	dbService   *service.DbService
+	sqlcService *service.SQLcService
+	err         error
 )
 
 func init() {
@@ -42,22 +46,22 @@ func init() {
 		log.Fatalf("Error while reading config file %s", err)
 	}
 
-	dbService, err = service.NewDbService(&service.DbConnCfg{
+	db = repository.NewDbConnection(&repository.DbConnCfg{
 		DbUsername: viper.GetString(dbUsername),
 		DbPassword: viper.GetString(dbPassword),
 		DbHost:     viper.GetString(dbHost),
 		DbName:     viper.GetString(dbName),
 	})
-	if err != nil {
-		panic(error.Error)
-	}
+
+	dbService = &service.DbService{DB: db}
+	sqlcService = service.NewSQLcService(db)
 }
 
 func main() {
 
 	// defer the close till after the main function has finished
 	// executing
-	defer dbService.Close()
+	defer db.Close()
 
 	boot := rkboot.NewBoot()
 
