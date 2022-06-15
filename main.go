@@ -9,8 +9,10 @@ import (
 	"context"
 	"database/sql"
 	"github.com/rookie-ninja/rk-boot/v2"
-	"github.com/rookie-ninja/rk-demo/api/gen/v1"
+	greeterV1 "github.com/rookie-ninja/rk-demo/api/gen/v1"
+	greeterV2 "github.com/rookie-ninja/rk-demo/api/gen/v2"
 	"github.com/rookie-ninja/rk-demo/api/impl/v1"
+	"github.com/rookie-ninja/rk-demo/api/impl/v2"
 	"github.com/rookie-ninja/rk-demo/repository"
 	"github.com/rookie-ninja/rk-demo/service"
 	"github.com/rookie-ninja/rk-grpc/v2/boot"
@@ -66,9 +68,10 @@ func main() {
 	boot := rkboot.NewBoot()
 
 	// register grpc
-	entry := rkgrpc.GetGrpcEntry("rk-demo")
+	entry := rkgrpc.GetGrpcEntry("ssc-poc")
 	entry.AddRegFuncGrpc(registerGreeter)
-	entry.AddRegFuncGw(greeter.RegisterGreeterHandlerFromEndpoint)
+	entry.AddRegFuncGw(greeterV1.RegisterGreeterHandlerFromEndpoint)
+	entry.AddRegFuncGw(greeterV2.RegisterGreeterHandlerFromEndpoint)
 
 	// Bootstrap
 	boot.Bootstrap(context.TODO())
@@ -78,21 +81,18 @@ func main() {
 }
 
 func registerGreeter(server *grpc.Server) {
-	greeter.RegisterGreeterServer(server, &v1.GreeterServer{})
-	greeter.RegisterCustomerServer(server, v1.NewCustomerServer(context.TODO(), dbService))
+	greeterV1.RegisterGreeterServer(server, &v1.GreeterServer{})
+	greeterV1.RegisterCustomerServer(server, v1.NewCustomerServer(context.TODO(), dbService))
+
+	greeterV2.RegisterGreeterServer(server, &v2.GreeterServer{})
+	greeterV2.RegisterCustomerServer(server, v2.NewCustomerServer(context.TODO(), sqlcService))
+
 	reflection.Register(server)
 
 	testService()
 }
 
 func testService() {
-
 	dbService.SelectAll()
-
-	cusId := sqlcService.InsertNewCustomer()
-	sqlcService.SelectAll()
-	sqlcService.UpdateCustomer(cusId)
-	sqlcService.SelectAll()
-	sqlcService.DeleteCustomer(cusId)
 	sqlcService.SelectAll()
 }

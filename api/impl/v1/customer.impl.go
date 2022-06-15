@@ -2,7 +2,7 @@ package v1
 
 import (
 	"context"
-	greeter "github.com/rookie-ninja/rk-demo/api/gen/v1"
+	greeterV1 "github.com/rookie-ninja/rk-demo/api/gen/v1"
 	"github.com/rookie-ninja/rk-demo/service"
 	"log"
 )
@@ -13,7 +13,7 @@ type CustomerServer struct {
 }
 
 var (
-	staticCustomerList = []*greeter.CustomerModel{
+	staticCustomerList = []*greeterV1.CustomerModel{
 		{
 			CusId:     1,
 			FirstName: "Bunyawat",
@@ -37,7 +37,7 @@ func NewCustomerServer(cx context.Context, dbs *service.DbService) *CustomerServ
 }
 
 func (server *CustomerServer) ReadAll(
-	_ context.Context, _ *greeter.ReadAllRequest) (*greeter.ReadAllResponse, error) {
+	_ context.Context, _ *greeterV1.ReadAllRequest) (*greeterV1.ReadAllResponse, error) {
 
 	customerList, err := server.dbService.SelectAll()
 	if err != nil {
@@ -45,22 +45,22 @@ func (server *CustomerServer) ReadAll(
 		return nil, err
 	}
 
-	cusListFromDB := make([]*greeter.CustomerModel, 0)
+	cusListFromDB := make([]*greeterV1.CustomerModel, 0)
 	for _, cus := range customerList {
-		cusListFromDB = append(cusListFromDB, &greeter.CustomerModel{
+		cusListFromDB = append(cusListFromDB, &greeterV1.CustomerModel{
 			FirstName: cus.Fname,
 			LastName:  cus.Lname,
 			Age:       int32(cus.Age),
 		})
 	}
 
-	return &greeter.ReadAllResponse{
+	return &greeterV1.ReadAllResponse{
 		CustomerList: cusListFromDB,
 	}, nil
 }
 
 func (server *CustomerServer) Create(
-	_ context.Context, request *greeter.CreateRequest) (*greeter.CreateResponse, error) {
+	_ context.Context, request *greeterV1.CreateRequest) (*greeterV1.CreateResponse, error) {
 
 	cusId, err := server.dbService.InsertNewCustomer(&service.CustomerRecord{
 		Fname: request.FirstName,
@@ -72,8 +72,8 @@ func (server *CustomerServer) Create(
 		return nil, err
 	}
 
-	return &greeter.CreateResponse{
-		Customer: &greeter.CustomerModel{
+	return &greeterV1.CreateResponse{
+		Customer: &greeterV1.CustomerModel{
 			CusId:     cusId,
 			FirstName: request.FirstName,
 			LastName:  request.LastName,
@@ -83,7 +83,7 @@ func (server *CustomerServer) Create(
 }
 
 func (server *CustomerServer) Update(
-	_ context.Context, request *greeter.UpdateRequest) (*greeter.UpdateResponse, error) {
+	_ context.Context, request *greeterV1.UpdateRequest) (*greeterV1.UpdateResponse, error) {
 
 	reqCus := request.Customer
 	rowsAffected, err := server.dbService.UpdateCustomer(&service.CustomerRecord{
@@ -96,20 +96,20 @@ func (server *CustomerServer) Update(
 		log.Println(err.Error())
 		return nil, err
 	}
-	return &greeter.UpdateResponse{
+	return &greeterV1.UpdateResponse{
 		UpdatedCount: rowsAffected,
 	}, nil
 }
 
 func (server *CustomerServer) Delete(
-	_ context.Context, request *greeter.DeleteRequest) (*greeter.DeleteResponse, error) {
+	_ context.Context, request *greeterV1.DeleteRequest) (*greeterV1.DeleteResponse, error) {
 
 	rowsAffected, err := server.dbService.DeleteCustomer(request.CusId)
 	if err != nil {
 		log.Println(err.Error())
 		return nil, err
 	}
-	return &greeter.DeleteResponse{
+	return &greeterV1.DeleteResponse{
 		DeletedCount: rowsAffected,
 	}, nil
 }

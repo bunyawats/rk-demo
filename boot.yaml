@@ -1,6 +1,6 @@
 # boot.yaml
 grpc:
-  - name: rk-demo
+  - name: ssc-poc
     port: 8080
     enabled: true
     commonService:

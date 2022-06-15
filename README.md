@@ -272,10 +272,10 @@ $ DB_HOSTNAME="localhost:3307" go run .
 
 ```shell script
 
-docker image ls 
-docker run -e DB_HOSTNAME='host.docker.internal:3306' --publish 8080:8080 rk-demo-app 
-docker container ls  
-docker inspect rk-demo-grpc-app-1 | grep Gateway
+$ docker image ls 
+$ docker run -e DB_HOSTNAME='host.docker.internal:3306' --publish 8080:8080 rk-demo-app 
+$ docker container ls  
+$ docker inspect rk-demo-grpc-app-1 | grep Gateway
 ```
 
 ### Use sqlc library
@@ -285,3 +285,10 @@ $ go install github.com/kyleconroy/sqlc/cmd/sqlc@latest
 $ sqlc generate
 ```
 - https://docs.sqlc.dev/en/latest/overview/install.html
+
+### Use Buf to generate V2 API
+
+```shell script
+
+$ buf generate --path api/v2 --template buf.gen.v2.yaml
+```

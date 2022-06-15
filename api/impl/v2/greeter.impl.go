@@ -1,8 +1,8 @@
-package v1
+package v2
 
 import (
 	"context"
-	greeter "github.com/rookie-ninja/rk-demo/api/gen/v1"
+	greeter "github.com/rookie-ninja/rk-demo/api/gen/v2"
 )
 
 //GreeterServer GreeterServer struct
@@ -14,6 +14,6 @@ func (server *GreeterServer) Hello(
 	request *greeter.HelloRequest) (*greeter.HelloResponse, error) {
 
 	return &greeter.HelloResponse{
-		MyMessage: "hello! v1 " + request.GetName(),
+		MyMessage: "hello V2! " + request.GetName(),
 	}, nil
 }
