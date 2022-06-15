@@ -82,7 +82,17 @@ func registerGreeter(server *grpc.Server) {
 	greeter.RegisterCustomerServer(server, v1.NewCustomerServer(context.TODO(), dbService))
 	reflection.Register(server)
 
+	testService()
+}
+
+func testService() {
+
 	dbService.SelectAll()
 
+	cusId := sqlcService.InsertNewCustomer()
+	sqlcService.SelectAll()
+	sqlcService.UpdateCustomer(cusId)
+	sqlcService.SelectAll()
+	sqlcService.DeleteCustomer(cusId)
 	sqlcService.SelectAll()
 }
