@@ -54,7 +54,7 @@ func init() {
 	})
 
 	dbService = &service.DbService{DB: db}
-	sqlcService = service.NewSQLcService(db)
+	sqlcService = service.NewSQLcService(db, context.TODO())
 }
 
 func main() {
@@ -83,4 +83,6 @@ func registerGreeter(server *grpc.Server) {
 	reflection.Register(server)
 
 	dbService.SelectAll()
+
+	sqlcService.SelectAll()
 }

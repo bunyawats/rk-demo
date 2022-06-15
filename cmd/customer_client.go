@@ -52,7 +52,7 @@ func updateExistCustomer(c greeter.CustomerClient, id int32) {
 	res, err := c.Update(context.Background(), &greeter.UpdateRequest{
 		Customer: &greeter.CustomerModel{
 			CusId:     id,
-			FirstName: fmt.Sprintf("%v_%v", "Bunyawat_", ranNumber),
+			FirstName: fmt.Sprintf("%v_%v", "Bunyawat", ranNumber),
 			LastName:  fmt.Sprintf("%v_%v", "Singchai", ranNumber),
 			Age:       ranNumber,
 		},
@@ -65,10 +65,12 @@ func updateExistCustomer(c greeter.CustomerClient, id int32) {
 
 func createNewCustomer(c greeter.CustomerClient) int32 {
 
+	ranNumber := int32(rand.Intn(100))
+
 	res, err := c.Create(context.Background(), &greeter.CreateRequest{
-		FirstName: "Bunyawat 12",
-		LastName:  "Singchai12",
-		Age:       int32(rand.Intn(100)),
+		FirstName: fmt.Sprintf("%v_%v", "Bunyawat", ranNumber),
+		LastName:  fmt.Sprintf("%v_%v", "Singchai", ranNumber),
+		Age:       ranNumber,
 	})
 	if err != nil {
 		log.Fatalf("error while calling Customer.Create RPC: %v\n", err)

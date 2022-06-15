@@ -52,7 +52,7 @@ func (s *DbService) SelectAll() ([]*CustomerRecord, error) {
 			return nil, err
 		}
 		// and then print out the tag's Name attribute
-		log.Println(cus.Fname, cus.Lname, cus.Age)
+		log.Println("DB Customer: ", cus.Fname, cus.Lname, cus.Age)
 
 		customerList = append(customerList, &cus)
 	}
