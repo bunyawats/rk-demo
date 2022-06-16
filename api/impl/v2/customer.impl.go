@@ -9,8 +9,8 @@ import (
 )
 
 type CustomerServer struct {
-	context   context.Context
-	dbService *service.SQLcService
+	context     context.Context
+	sqlcService *service.SQLcService
 }
 
 var (
@@ -32,15 +32,15 @@ var (
 
 func NewCustomerServer(cx context.Context, dbs *service.SQLcService) *CustomerServer {
 	return &CustomerServer{
-		context:   cx,
-		dbService: dbs,
+		context:     cx,
+		sqlcService: dbs,
 	}
 }
 
 func (server *CustomerServer) ReadAll(
 	_ context.Context, _ *greeterV2.ReadAllRequest) (*greeterV2.ReadAllResponse, error) {
 
-	customerList, err := server.dbService.SelectAll()
+	customerList, err := server.sqlcService.SelectAll()
 	if err != nil {
 		log.Println(err.Error())
 		return nil, err
@@ -63,16 +63,15 @@ func (server *CustomerServer) ReadAll(
 func (server *CustomerServer) Create(
 	_ context.Context, request *greeterV2.CreateRequest) (*greeterV2.CreateResponse, error) {
 
-	//cusId, err := server.dbService.InsertNewCustomer(&service.CustomerRecord{
-	//	Fname: request.FirstName,
-	//	Lname: request.LastName,
-	//	Age:   int(request.Age),
-	//})
-	//if err != nil {
-	//	log.Println(err.Error())
-	//	return nil, err
-	//}
-	cusId := server.dbService.InsertNewCustomer()
+	cusId, err := server.sqlcService.InsertNewCustomer(&service.CustomerRecord{
+		Fname: request.FirstName,
+		Lname: request.LastName,
+		Age:   int(request.Age),
+	})
+	if err != nil {
+		log.Println(err.Error())
+		return nil, err
+	}
 
 	return &greeterV2.CreateResponse{
 		Customer: &greeterV2.CustomerModel{
@@ -88,42 +87,40 @@ func (server *CustomerServer) Update(
 	_ context.Context, request *greeterV2.UpdateRequest) (*greeterV2.UpdateResponse, error) {
 
 	reqCus := request.Customer
-	//rowsAffected, err := server.dbService.UpdateCustomer(&service.CustomerRecord{
-	//	CusId: reqCus.CusId,
-	//	Fname: reqCus.FirstName,
-	//	Lname: reqCus.LastName,
-	//	Age:   int(reqCus.Age),
-	//})
-	//if err != nil {
-	//	log.Println(err.Error())
-	//	return nil, err
-	//}
-	server.dbService.UpdateCustomer(reqCus.CusId)
+	rowsAffected, err := server.sqlcService.UpdateCustomer(&service.CustomerRecord{
+		CusId: reqCus.CusId,
+		Fname: reqCus.FirstName,
+		Lname: reqCus.LastName,
+		Age:   int(reqCus.Age),
+	})
+	if err != nil {
+		log.Println(err.Error())
+		return nil, err
+	}
 
 	return &greeterV2.UpdateResponse{
-		UpdatedCount: reqCus.CusId,
+		UpdatedCount: rowsAffected,
 	}, nil
 }
 
 func (server *CustomerServer) Delete(
 	_ context.Context, request *greeterV2.DeleteRequest) (*greeterV2.DeleteResponse, error) {
 
-	//rowsAffected, err := server.dbService.DeleteCustomer(request.CusId)
-	//if err != nil {
-	//	log.Println(err.Error())
-	//	return nil, err
-	//}
-	server.dbService.DeleteCustomer(request.CusId)
+	rowsAffected, err := server.sqlcService.DeleteCustomer(request.CusId)
+	if err != nil {
+		log.Println(err.Error())
+		return nil, err
+	}
 
 	return &greeterV2.DeleteResponse{
-		DeletedCount: request.CusId,
+		DeletedCount: rowsAffected,
 	}, nil
 }
 
 func (server *CustomerServer) ReadAllStream(
 	_ *greeterV2.ReadAllRequest, resStream greeterV2.Customer_ReadAllStreamServer) error {
 
-	customerList, err := server.dbService.SelectAll()
+	customerList, err := server.sqlcService.SelectAll()
 	if err != nil {
 		log.Println(err.Error())
 		return err

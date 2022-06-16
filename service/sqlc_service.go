@@ -33,40 +33,49 @@ func (s *SQLcService) SelectAll() ([]repository.ListCustomersRow, error) {
 	return cusList, err
 }
 
-func (s *SQLcService) InsertNewCustomer() int32 {
+func (s *SQLcService) InsertNewCustomer(cus *CustomerRecord) (int32, error) {
 
 	result, err := s.queries.CreateCustomer(s.ctx, repository.CreateCustomerParams{
-		Fname: sql.NullString{String: "Bunyawat_999", Valid: true},
-		Lname: sql.NullString{String: "Singchai_999", Valid: true},
-		Age:   sql.NullInt32{Int32: 999, Valid: true},
+		Fname: sql.NullString{String: cus.Fname, Valid: true},
+		Lname: sql.NullString{String: cus.Lname, Valid: true},
+		Age:   sql.NullInt32{Int32: int32(cus.Age), Valid: true},
 	})
 	if err != nil {
 		log.Println("InsertNewCustomer: ", err.Error())
-		return -1
+		return -1, err
 	}
 	cusID, err := result.LastInsertId()
 	if err != nil {
 		log.Println("InsertNewCustomer: ", err.Error())
-		return -1
+		return -1, err
 	}
-	return int32(cusID)
+	return int32(cusID), nil
 }
 
-func (s *SQLcService) UpdateCustomer(cusId int32) {
-	_, err := s.queries.UpdateCustomer(s.ctx, repository.UpdateCustomerParams{
-		Fname: sql.NullString{String: "Bunyawat_888", Valid: true},
-		Lname: sql.NullString{String: "Singchai_888", Valid: true},
-		Age:   sql.NullInt32{Int32: 888, Valid: true},
-		Cusid: cusId,
+func (s *SQLcService) UpdateCustomer(cus *CustomerRecord) (int32, error) {
+	result, err := s.queries.UpdateCustomer(s.ctx, repository.UpdateCustomerParams{
+		Fname: sql.NullString{String: cus.Fname, Valid: true},
+		Lname: sql.NullString{String: cus.Lname, Valid: true},
+		Age:   sql.NullInt32{Int32: int32(cus.Age), Valid: true},
+		Cusid: cus.CusId,
 	})
 	if err != nil {
 		log.Println("UpdateCustomer : ", err.Error())
+		return -1, err
 	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Println("UpdateCustomer: ", err.Error())
+		return -1, err
+	}
+	return int32(rowsAffected), nil
 }
 
-func (s *SQLcService) DeleteCustomer(cusId int32) {
+func (s *SQLcService) DeleteCustomer(cusId int32) (int32, error) {
 	err := s.queries.DeleteCustomer(s.ctx, cusId)
 	if err != nil {
 		log.Println("DeleteCustomer : ", err.Error())
+		return 0, err
 	}
+	return 1, nil
 }
