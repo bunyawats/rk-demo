@@ -7,6 +7,7 @@ import (
 	greeterV2 "github.com/rookie-ninja/rk-demo/api/gen/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"io"
 	"log"
 	"math/rand"
 	"time"
@@ -42,6 +43,7 @@ func main() {
 	getAllCustomerV2(c2)
 	deleteExistCustomerV2(c2, cusId-1)
 	getAllCustomerV2(c2)
+	getAllCustomerStreamV2(c2)
 }
 
 func deleteExistCustomerV2(c greeterV2.CustomerClient, id int32) {
@@ -77,6 +79,25 @@ func getAllCustomerV2(c greeterV2.CustomerClient) {
 		log.Fatalf("error while calling Customer.ReadAll RPC: %v\n", err)
 	}
 	fmt.Printf("Response from Customer.ReadAll V2: %v\n", res.CustomerList)
+}
+
+func getAllCustomerStreamV2(c greeterV2.CustomerClient) {
+	resStream, err := c.ReadAllStream(context.Background(), &greeterV2.ReadAllRequest{})
+	if err != nil {
+		log.Fatalf("error while calling Customer.ReadAll RPC: %v\n", err)
+	}
+
+	for {
+		cus, err := resStream.Recv()
+		if err == io.EOF {
+			// we have reached the end of the straem
+			break
+		}
+		if err != nil {
+			log.Fatalf("error while reading stream %v\n", err)
+		}
+		fmt.Printf("Response from Customer.getAllCustomerStream V2: %v\n", cus)
+	}
 }
 
 func createNewCustomerV2(c greeterV2.CustomerClient) int32 {

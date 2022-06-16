@@ -19,6 +19,7 @@ message HelloResponse {
 service Customer {
   rpc Create (CreateRequest) returns (CreateResponse) {}
   rpc ReadAll (ReadAllRequest) returns (ReadAllResponse) {}
+  rpc ReadAllStream (ReadAllRequest) returns (stream CustomerModel) {}
   rpc Update (UpdateRequest) returns (UpdateResponse) {}
   rpc Delete (DeleteRequest) returns (DeleteResponse) {}
 }

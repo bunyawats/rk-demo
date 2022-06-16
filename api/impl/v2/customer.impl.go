@@ -5,6 +5,7 @@ import (
 	greeterV2 "github.com/rookie-ninja/rk-demo/api/gen/v2"
 	"github.com/rookie-ninja/rk-demo/service"
 	"log"
+	"time"
 )
 
 type CustomerServer struct {
@@ -117,4 +118,26 @@ func (server *CustomerServer) Delete(
 	return &greeterV2.DeleteResponse{
 		DeletedCount: request.CusId,
 	}, nil
+}
+
+func (server *CustomerServer) ReadAllStream(
+	_ *greeterV2.ReadAllRequest, resStream greeterV2.Customer_ReadAllStreamServer) error {
+
+	customerList, err := server.dbService.SelectAll()
+	if err != nil {
+		log.Println(err.Error())
+		return err
+	}
+
+	for _, cus := range customerList {
+		res := &greeterV2.CustomerModel{
+			FirstName: cus.Fname.String,
+			LastName:  cus.Lname.String,
+			Age:       cus.Age.Int32,
+		}
+		resStream.Send(res)
+		time.Sleep(time.Second * 2)
+	}
+
+	return nil
 }
