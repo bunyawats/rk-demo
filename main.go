@@ -15,13 +15,15 @@ import (
 	"github.com/rookie-ninja/rk-demo/api/impl/v2"
 	"github.com/rookie-ninja/rk-demo/repository"
 	"github.com/rookie-ninja/rk-demo/service"
-	rkentry "github.com/rookie-ninja/rk-entry/v2/entry"
 	"github.com/rookie-ninja/rk-grpc/v2/boot"
+	"github.com/spf13/viper"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+	"log"
 )
 
 const (
-	configName = "ssc-config"
+	configFileName = ".env"
 
 	dbUsername = "DB_USERNAME"
 	dbPassword = "DB_PASSWORD"
@@ -34,26 +36,27 @@ var (
 	dbService   *service.DbService
 	sqlcService *service.SQLcService
 	err         error
-	boot        *rkboot.Boot
 )
 
 func init() {
 
-	boot = rkboot.NewBoot()
+	viper.SetConfigFile(configFileName)
+	viper.AutomaticEnv()
+
+	err := viper.ReadInConfig()
+	if err != nil {
+		log.Fatalf("Error while reading config file %s", err)
+	}
 
 	db = repository.NewDbConnection(&repository.DbConnCfg{
-		DbUsername: getConfigString(dbUsername),
-		DbPassword: getConfigString(dbPassword),
-		DbHost:     getConfigString(dbHost),
-		DbName:     getConfigString(dbName),
+		DbUsername: viper.GetString(dbUsername),
+		DbPassword: viper.GetString(dbPassword),
+		DbHost:     viper.GetString(dbHost),
+		DbName:     viper.GetString(dbName),
 	})
 
 	dbService = &service.DbService{DB: db}
 	sqlcService = service.NewSQLcService(db, context.TODO())
-}
-
-func getConfigString(name string) string {
-	return rkentry.GlobalAppCtx.GetConfigEntry(configName).GetString(name)
 }
 
 func main() {
@@ -62,14 +65,13 @@ func main() {
 	// executing
 	defer db.Close()
 
+	boot := rkboot.NewBoot()
+
 	// register grpc
-	entry := rkgrpc.GetGrpcEntry("ssc-grpc")
+	entry := rkgrpc.GetGrpcEntry("ssc-poc")
 	entry.AddRegFuncGrpc(registerGreeter)
 	entry.AddRegFuncGw(greeterV1.RegisterGreeterHandlerFromEndpoint)
 	entry.AddRegFuncGw(greeterV2.RegisterGreeterHandlerFromEndpoint)
-
-	// prom proxy
-	//entryPromProxy := rkgrpc.GetGrpcEntry("ssc-prom-proxy")
 
 	// Bootstrap
 	boot.Bootstrap(context.TODO())
@@ -84,4 +86,13 @@ func registerGreeter(server *grpc.Server) {
 
 	greeterV2.RegisterGreeterServer(server, &v2.GreeterServer{})
 	greeterV2.RegisterCustomerServer(server, v2.NewCustomerServer(context.TODO(), sqlcService))
+
+	reflection.Register(server)
+
+	testService()
+}
+
+func testService() {
+	dbService.SelectAll()
+	sqlcService.SelectAll()
 }

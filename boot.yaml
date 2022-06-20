@@ -1,13 +1,8 @@
 # boot.yaml
-config:
-  - name: ssc-config
-    path: ".env"
 grpc:
-  - name: ssc-grpc
-    port: 9090
+  - name: ssc-poc
+    port: 8080
     enabled: true
-    enableReflection: true        # Enable gRPC reflection mainly for grpcurl
-    enableRkGwOption: true        # Enable RK style grpc-gateway options
     commonService:
       enabled: true
     sw:
@@ -15,24 +10,9 @@ grpc:
     docs:
       enabled: true
     prom:
-      enabled: false
+      enabled: true
     middleware:
       logging:
         enabled: true
       prom:
-        enabled: false
-  - name: ssc-prom
-    port: 9070
-    enabled: true
-    commonService:
-      enabled: true
-    prom:
-      enabled: true
-  - name: ssc-app
-    port: 9050
-    enabled: true
-    commonService:
-      enabled: true
-    prom:
-      enabled: true
-
+        enabled: true
