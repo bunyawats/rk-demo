@@ -1,4 +1,7 @@
 # boot.yaml
+config:
+  - name: ssc-config
+    path: ".env"
 grpc:
   - name: ssc-poc
     port: 8080

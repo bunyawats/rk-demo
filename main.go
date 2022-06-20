@@ -15,15 +15,14 @@ import (
 	"github.com/rookie-ninja/rk-demo/api/impl/v2"
 	"github.com/rookie-ninja/rk-demo/repository"
 	"github.com/rookie-ninja/rk-demo/service"
+	rkentry "github.com/rookie-ninja/rk-entry/v2/entry"
 	"github.com/rookie-ninja/rk-grpc/v2/boot"
-	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"log"
 )
 
 const (
-	configFileName = ".env"
+	configName = "ssc-config"
 
 	dbUsername = "DB_USERNAME"
 	dbPassword = "DB_PASSWORD"
@@ -36,27 +35,26 @@ var (
 	dbService   *service.DbService
 	sqlcService *service.SQLcService
 	err         error
+	boot        *rkboot.Boot
 )
 
 func init() {
 
-	viper.SetConfigFile(configFileName)
-	viper.AutomaticEnv()
-
-	err := viper.ReadInConfig()
-	if err != nil {
-		log.Fatalf("Error while reading config file %s", err)
-	}
+	boot = rkboot.NewBoot()
 
 	db = repository.NewDbConnection(&repository.DbConnCfg{
-		DbUsername: viper.GetString(dbUsername),
-		DbPassword: viper.GetString(dbPassword),
-		DbHost:     viper.GetString(dbHost),
-		DbName:     viper.GetString(dbName),
+		DbUsername: getConfigString(dbUsername),
+		DbPassword: getConfigString(dbPassword),
+		DbHost:     getConfigString(dbHost),
+		DbName:     getConfigString(dbName),
 	})
 
 	dbService = &service.DbService{DB: db}
 	sqlcService = service.NewSQLcService(db, context.TODO())
+}
+
+func getConfigString(name string) string {
+	return rkentry.GlobalAppCtx.GetConfigEntry(configName).GetString(name)
 }
 
 func main() {
@@ -64,8 +62,6 @@ func main() {
 	// defer the close till after the main function has finished
 	// executing
 	defer db.Close()
-
-	boot := rkboot.NewBoot()
 
 	// register grpc
 	entry := rkgrpc.GetGrpcEntry("ssc-poc")
