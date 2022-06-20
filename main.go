@@ -33,7 +33,6 @@ var (
 	db          *sql.DB
 	dbService   *service.DbService
 	sqlcService *service.SQLcService
-	err         error
 	boot        *rkboot.Boot
 )
 
@@ -41,7 +40,8 @@ func init() {
 
 	boot = rkboot.NewBoot()
 
-	db = repository.NewDbConnectionEnv(&repository.DbConnCfg{
+	// will use late database connection initialize
+	_ = repository.NewDbConnectionEnv(&repository.DbConnCfg{
 		DbUsername: getConfigString(dbUsername),
 		DbPassword: getConfigString(dbPassword),
 		DbHost:     getConfigString(dbHost),
@@ -60,8 +60,6 @@ func getDbConn() *sql.DB {
 
 func main() {
 
-	defer db.Close()
-
 	// register grpc
 	entry := rkgrpc.GetGrpcEntry("ssc-grpc")
 	entry.AddRegFuncGrpc(registerGreeter)
@@ -70,7 +68,10 @@ func main() {
 
 	// Bootstrap
 	boot.Bootstrap(context.TODO())
-	//db = repository.NewDbConnectionRKDB()
+	db = repository.NewDbConnectionRKDB()
+	defer db.Close()
+
+	testService()
 
 	// Wait for shutdown sig
 	boot.WaitForShutdownSig(context.TODO())
@@ -88,7 +89,7 @@ func registerGreeter(server *grpc.Server) {
 	greeterV2.RegisterCustomerServer(server, v2.NewCustomerServer(context.TODO(), sqlcService))
 
 	//	reflection.Register(server)
-	testService()
+
 }
 
 func testService() {
