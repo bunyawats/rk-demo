@@ -4,10 +4,18 @@ import (
 	"database/sql"
 	"fmt"
 	rkmysql "github.com/rookie-ninja/rk-db/mysql"
+	rkentry "github.com/rookie-ninja/rk-entry/v2/entry"
 	"log"
 )
 
 const (
+	configName = "ssc-config"
+
+	dbUsername = "DB_USERNAME"
+	dbPassword = "DB_PASSWORD"
+	dbHost     = "DB_HOSTNAME"
+	dbName     = "DB_NAME"
+
 	driverName = "mysql"
 
 	// "test:test@tcp(127.0.0.1:3306)/test"
@@ -22,6 +30,10 @@ type (
 		DbName     string
 	}
 )
+
+func getConfigString(name string) string {
+	return rkentry.GlobalAppCtx.GetConfigEntry(configName).GetString(name)
+}
 
 func NewDbConnectionEnv(dbCfg *DbConnCfg) *sql.DB {
 

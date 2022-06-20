@@ -15,18 +15,8 @@ import (
 	"github.com/rookie-ninja/rk-demo/api/impl/v2"
 	"github.com/rookie-ninja/rk-demo/repository"
 	"github.com/rookie-ninja/rk-demo/service"
-	rkentry "github.com/rookie-ninja/rk-entry/v2/entry"
 	rkgrpc "github.com/rookie-ninja/rk-grpc/v2/boot"
 	"google.golang.org/grpc"
-)
-
-const (
-	configName = "ssc-config"
-
-	dbUsername = "DB_USERNAME"
-	dbPassword = "DB_PASSWORD"
-	dbHost     = "DB_HOSTNAME"
-	dbName     = "DB_NAME"
 )
 
 var (
@@ -36,29 +26,13 @@ var (
 	boot        *rkboot.Boot
 )
 
-func init() {
-
-	boot = rkboot.NewBoot()
-
-	// will use late database connection initialize
-	_ = repository.NewDbConnectionEnv(&repository.DbConnCfg{
-		DbUsername: getConfigString(dbUsername),
-		DbPassword: getConfigString(dbPassword),
-		DbHost:     getConfigString(dbHost),
-		DbName:     getConfigString(dbName),
-	})
-
-}
-
-func getConfigString(name string) string {
-	return rkentry.GlobalAppCtx.GetConfigEntry(configName).GetString(name)
-}
-
 func getDbConn() *sql.DB {
 	return db
 }
 
 func main() {
+
+	boot = rkboot.NewBoot()
 
 	// register grpc
 	entry := rkgrpc.GetGrpcEntry("ssc-grpc")
