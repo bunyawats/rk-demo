@@ -12,17 +12,21 @@ mysql:
     database:
       - name: test
 grpc:
-  - name: ssc-poc
+  - name: ssc-grpc
     enabled: true
     port: 8080
     enableReflection: true
     enableRkGwOption: true
-    commonService:
-      enabled: true
-    sw:
-      enabled: true
-    docs:
-      enabled: true
+    middleware:
+      logging:
+        enabled: true
+      prom:
+        enabled: true
+      meta:
+        enabled: true
+  - name: ssc-prom
+    enabled: true
+    port: 7070
     prom:
       enabled: true
     middleware:
@@ -32,3 +36,13 @@ grpc:
         enabled: true
       meta:
         enabled: true
+  - name: ssc-app
+    enabled: true
+    port: 6060
+    enableRkGwOption: true
+    commonService:
+      enabled: true
+    sw:
+      enabled: true
+    docs:
+      enabled: true

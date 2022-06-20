@@ -63,7 +63,7 @@ func main() {
 	defer db.Close()
 
 	// register grpc
-	entry := rkgrpc.GetGrpcEntry("ssc-poc")
+	entry := rkgrpc.GetGrpcEntry("ssc-grpc")
 	entry.AddRegFuncGrpc(registerGreeter)
 	entry.AddRegFuncGw(greeterV1.RegisterGreeterHandlerFromEndpoint)
 	entry.AddRegFuncGw(greeterV2.RegisterGreeterHandlerFromEndpoint)

@@ -23,14 +23,13 @@ func NewSQLcService(conFun func() *sql.DB, ctx context.Context) *SQLcService {
 }
 
 func (s *SQLcService) SelectAll() ([]repository.ListCustomersRow, error) {
+
 	queries := repository.New(s.conn())
 	cusList, err := queries.ListCustomers(s.ctx)
 	if err != nil {
 		log.Print("SelectAll : ", err.Error())
 	}
-	for _, customer := range cusList {
-		log.Println("SQLC Customer: ", customer.Fname.String, customer.Lname.String, customer.Age.Int32)
-	}
+	log.Println("Call SQLcService.SelectAll length: ", len(cusList))
 	return cusList, err
 }
 
