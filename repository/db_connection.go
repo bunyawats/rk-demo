@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	rkmysql "github.com/rookie-ninja/rk-db/mysql"
 	"log"
 )
 
@@ -22,7 +23,7 @@ type (
 	}
 )
 
-func NewDbConnection(dbCfg *DbConnCfg) *sql.DB {
+func NewDbConnectionEnv(dbCfg *DbConnCfg) *sql.DB {
 
 	dataSourceName := fmt.Sprintf(dataSourceNameTemplate,
 		dbCfg.DbUsername,
@@ -39,6 +40,24 @@ func NewDbConnection(dbCfg *DbConnCfg) *sql.DB {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+
+	return dbConn
+}
+
+func NewDbConnectionRKDB() *sql.DB {
+
+	mysqlEntry := rkmysql.GetMySqlEntry("test-db")
+	testDb := mysqlEntry.GetDB("test")
+	dbConn, err := testDb.DB()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	err = dbConn.Ping()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	log.Println("Init Gorm connection success")
 
 	return dbConn
 }

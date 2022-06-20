@@ -292,3 +292,9 @@ $ sqlc generate
 
 $ buf generate --path api/v2 --template buf.gen.v2.yaml
 ```
+
+### Use rk-boot plugin for MySql database GORM library
+
+```go
+$ go get github.com/go-sql-driver/mysql
+```

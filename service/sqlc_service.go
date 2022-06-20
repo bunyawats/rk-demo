@@ -10,20 +10,21 @@ import (
 
 type (
 	SQLcService struct {
-		queries *repository.Queries
-		ctx     context.Context
+		conn func() *sql.DB
+		ctx  context.Context
 	}
 )
 
-func NewSQLcService(db *sql.DB, ctx context.Context) *SQLcService {
+func NewSQLcService(conFun func() *sql.DB, ctx context.Context) *SQLcService {
 	return &SQLcService{
-		queries: repository.New(db),
-		ctx:     ctx,
+		conn: conFun,
+		ctx:  ctx,
 	}
 }
 
 func (s *SQLcService) SelectAll() ([]repository.ListCustomersRow, error) {
-	cusList, err := s.queries.ListCustomers(s.ctx)
+	queries := repository.New(s.conn())
+	cusList, err := queries.ListCustomers(s.ctx)
 	if err != nil {
 		log.Print("SelectAll : ", err.Error())
 	}
@@ -35,7 +36,8 @@ func (s *SQLcService) SelectAll() ([]repository.ListCustomersRow, error) {
 
 func (s *SQLcService) InsertNewCustomer(cus *CustomerRecord) (int32, error) {
 
-	result, err := s.queries.CreateCustomer(s.ctx, repository.CreateCustomerParams{
+	queries := repository.New(s.conn())
+	result, err := queries.CreateCustomer(s.ctx, repository.CreateCustomerParams{
 		Fname: sql.NullString{String: cus.Fname, Valid: true},
 		Lname: sql.NullString{String: cus.Lname, Valid: true},
 		Age:   sql.NullInt32{Int32: int32(cus.Age), Valid: true},
@@ -53,7 +55,8 @@ func (s *SQLcService) InsertNewCustomer(cus *CustomerRecord) (int32, error) {
 }
 
 func (s *SQLcService) UpdateCustomer(cus *CustomerRecord) (int32, error) {
-	result, err := s.queries.UpdateCustomer(s.ctx, repository.UpdateCustomerParams{
+	queries := repository.New(s.conn())
+	result, err := queries.UpdateCustomer(s.ctx, repository.UpdateCustomerParams{
 		Fname: sql.NullString{String: cus.Fname, Valid: true},
 		Lname: sql.NullString{String: cus.Lname, Valid: true},
 		Age:   sql.NullInt32{Int32: int32(cus.Age), Valid: true},
@@ -72,7 +75,8 @@ func (s *SQLcService) UpdateCustomer(cus *CustomerRecord) (int32, error) {
 }
 
 func (s *SQLcService) DeleteCustomer(cusId int32) (int32, error) {
-	err := s.queries.DeleteCustomer(s.ctx, cusId)
+	queries := repository.New(s.conn())
+	err := queries.DeleteCustomer(s.ctx, cusId)
 	if err != nil {
 		log.Println("DeleteCustomer : ", err.Error())
 		return 0, err

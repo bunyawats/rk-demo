@@ -2,10 +2,21 @@
 config:
   - name: ssc-config
     path: ".env"
+mysql:
+  - name: test-db
+    enabled: true
+    domain: "*"
+    addr: "localhost:3306"
+    user: test
+    pass: test
+    database:
+      - name: test
 grpc:
   - name: ssc-poc
-    port: 8080
     enabled: true
+    port: 8080
+    enableReflection: true
+    enableRkGwOption: true
     commonService:
       enabled: true
     sw:
@@ -18,4 +29,6 @@ grpc:
       logging:
         enabled: true
       prom:
+        enabled: true
+      meta:
         enabled: true

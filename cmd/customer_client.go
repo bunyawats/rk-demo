@@ -43,7 +43,7 @@ func main() {
 	getAllCustomerV2(c2)
 	deleteExistCustomerV2(c2, cusId-1)
 	getAllCustomerV2(c2)
-	getAllCustomerStreamV2(c2)
+	//getAllCustomerStreamV2(c2)
 }
 
 func deleteExistCustomerV2(c greeterV2.CustomerClient, id int32) {

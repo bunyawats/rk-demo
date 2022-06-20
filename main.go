@@ -16,9 +16,8 @@ import (
 	"github.com/rookie-ninja/rk-demo/repository"
 	"github.com/rookie-ninja/rk-demo/service"
 	rkentry "github.com/rookie-ninja/rk-entry/v2/entry"
-	"github.com/rookie-ninja/rk-grpc/v2/boot"
+	rkgrpc "github.com/rookie-ninja/rk-grpc/v2/boot"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 )
 
 const (
@@ -42,25 +41,25 @@ func init() {
 
 	boot = rkboot.NewBoot()
 
-	db = repository.NewDbConnection(&repository.DbConnCfg{
+	db = repository.NewDbConnectionEnv(&repository.DbConnCfg{
 		DbUsername: getConfigString(dbUsername),
 		DbPassword: getConfigString(dbPassword),
 		DbHost:     getConfigString(dbHost),
 		DbName:     getConfigString(dbName),
 	})
 
-	dbService = &service.DbService{DB: db}
-	sqlcService = service.NewSQLcService(db, context.TODO())
 }
 
 func getConfigString(name string) string {
 	return rkentry.GlobalAppCtx.GetConfigEntry(configName).GetString(name)
 }
 
+func getDbConn() *sql.DB {
+	return db
+}
+
 func main() {
 
-	// defer the close till after the main function has finished
-	// executing
 	defer db.Close()
 
 	// register grpc
@@ -71,20 +70,24 @@ func main() {
 
 	// Bootstrap
 	boot.Bootstrap(context.TODO())
+	//db = repository.NewDbConnectionRKDB()
 
 	// Wait for shutdown sig
 	boot.WaitForShutdownSig(context.TODO())
 }
 
 func registerGreeter(server *grpc.Server) {
+
+	dbService = &service.DbService{DbConn: getDbConn}
+	sqlcService = service.NewSQLcService(getDbConn, context.TODO())
+
 	greeterV1.RegisterGreeterServer(server, &v1.GreeterServer{})
 	greeterV1.RegisterCustomerServer(server, v1.NewCustomerServer(context.TODO(), dbService))
 
 	greeterV2.RegisterGreeterServer(server, &v2.GreeterServer{})
 	greeterV2.RegisterCustomerServer(server, v2.NewCustomerServer(context.TODO(), sqlcService))
 
-	reflection.Register(server)
-
+	//	reflection.Register(server)
 	testService()
 }
 

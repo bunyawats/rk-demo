@@ -16,7 +16,7 @@ const (
 
 type (
 	DbService struct {
-		DB *sql.DB
+		DbConn func() *sql.DB
 	}
 
 	CustomerRecord struct {
@@ -27,17 +27,12 @@ type (
 	}
 )
 
-func (s *DbService) Close() {
-	log.Println("closing database")
-	s.DB.Close()
-}
-
 func (s *DbService) SelectAll() ([]*CustomerRecord, error) {
 
 	fmt.Println("Call DbService.SelectAll")
 
 	// Execute the query
-	results, err := s.DB.Query(selectAllCustomer)
+	results, err := s.DbConn().Query(selectAllCustomer)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +59,7 @@ func (s *DbService) InsertNewCustomer(cus *CustomerRecord) (int32, error) {
 
 	fmt.Println("Call DbService.InsertNewCustomer")
 
-	insertSmt, err := s.DB.Prepare(insertNewCustomer)
+	insertSmt, err := s.DbConn().Prepare(insertNewCustomer)
 	if err != nil {
 		return -1, err
 	}
@@ -91,7 +86,7 @@ func (s *DbService) UpdateCustomer(cus *CustomerRecord) (int32, error) {
 
 	fmt.Println("Call DbService.UpdateCustomer")
 
-	updateSmt, err := s.DB.Prepare(updateExistingCustomer)
+	updateSmt, err := s.DbConn().Prepare(updateExistingCustomer)
 	if err != nil {
 		return -1, err
 	}
@@ -119,7 +114,7 @@ func (s *DbService) DeleteCustomer(cusId int32) (int32, error) {
 
 	fmt.Println("Call DbService.DeleteCustomer")
 
-	deleteSmt, err := s.DB.Prepare(deleteExistingCustomer)
+	deleteSmt, err := s.DbConn().Prepare(deleteExistingCustomer)
 	if err != nil {
 		return -1, err
 	}
