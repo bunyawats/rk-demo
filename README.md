@@ -313,5 +313,8 @@ grpcurl -v -d '{"name":"bunyawat"}' -insecure localhost:8080 api.v2.Greeter.Hell
 ```
 - https://github.com/cloudflare/cfssl
 
+### Override boot.yaml
 
-
+```go
+$ RK_MYSQL_0_USER=bunyawat123 go run .
+```

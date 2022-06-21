@@ -17,6 +17,7 @@ import (
 	"github.com/rookie-ninja/rk-demo/service"
 	rkgrpc "github.com/rookie-ninja/rk-grpc/v2/boot"
 	"google.golang.org/grpc"
+	"os"
 )
 
 var (
@@ -31,6 +32,8 @@ func getDbConn() *sql.DB {
 }
 
 func main() {
+
+	os.Setenv("RK_MYSQL_0_USER", "bunyawat444")
 
 	boot = rkboot.NewBoot()
 
