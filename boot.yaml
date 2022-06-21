@@ -2,6 +2,10 @@
 config:
   - name: ssc-config
     path: ".env"
+cert:
+  - name: my-certs
+    certPemPath: "certs/server.pem"
+    keyPemPath: "certs/server-key.pem"
 mysql:
   - name: test-db
     enabled: true
@@ -17,6 +21,7 @@ grpc:
     port: 8080
     enableReflection: true
     enableRkGwOption: true
+    certEntry: "my-certs"
     middleware:
       logging:
         enabled: true
@@ -27,6 +32,7 @@ grpc:
   - name: ssc-prom
     enabled: true
     port: 7070
+    certEntry: "my-certs"
     prom:
       enabled: true
     middleware:
@@ -40,6 +46,7 @@ grpc:
     enabled: true
     port: 6060
     enableRkGwOption: true
+    certEntry: "my-certs"
     commonService:
       enabled: true
     sw:

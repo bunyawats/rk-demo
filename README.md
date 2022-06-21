@@ -298,3 +298,20 @@ $ buf generate --path api/v2 --template buf.gen.v2.yaml
 ```go
 $ go get github.com/go-sql-driver/mysql
 ```
+
+
+### gRPC: Enable TLS/SSL
+
+```go
+$ go install github.com/cloudflare/cfssl/cmd/...@latest
+$ cfssl print-defaults config > ca-config.json
+$ cfssl print-defaults csr > ca-csr.json
+$ cfssl gencert -initca ca-csr.json | cfssljson -bare ca -
+$ cfssl gencert -config ca-config.json -ca ca.pem -ca-key ca-key.pem -profile www ca-csr.json | cfssljson -bare server
+
+grpcurl -v -d '{"name":"bunyawat"}' -insecure localhost:8080 api.v2.Greeter.Hello
+```
+- https://github.com/cloudflare/cfssl
+
+
+
