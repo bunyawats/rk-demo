@@ -20,7 +20,7 @@ require (
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/golang-jwt/jwt/v4 v4.4.1 // indirect
+	github.com/golang-jwt/jwt/v4 v4.4.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
@@ -55,10 +55,10 @@ require (
 	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/ratelimit v0.2.0 // indirect
 	go.uber.org/zap v1.21.0 // indirect
-	golang.org/x/net v0.0.0-20220617184016-355a448f1bc9 // indirect
-	golang.org/x/sys v0.0.0-20220615213510-4f61da869c0c // indirect
+	golang.org/x/net v0.0.0-20220622184535-263ec571b305 // indirect
+	golang.org/x/sys v0.0.0-20220622161953-175b2fd9d664 // indirect
 	golang.org/x/text v0.3.7 // indirect
-	google.golang.org/genproto v0.0.0-20220617124728-180714bec0ad // indirect
+	google.golang.org/genproto v0.0.0-20220623142657-077d458a5694 // indirect
 	gopkg.in/ini.v1 v1.66.6 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
