@@ -15,6 +15,16 @@ mysql:
     pass: test
     database:
       - name: test
+logger:
+  - name: my-logger
+    zap:
+      outputPaths: ["logs/log.log"]
+      encoding: json
+event:
+  - name: my-event
+    zap:
+      outputPaths: ["logs/event.log"]
+      encoding: json
 grpc:
   - name: ssc-grpc
     enabled: true
@@ -22,16 +32,20 @@ grpc:
     enableReflection: true
     enableRkGwOption: true
     certEntry: "my-certs"
+    loggerEntry: my-logger
+    eventEntry: my-event
     middleware:
       logging:
         enabled: true
-        loggerEncoding: "json"
+#        loggerEncoding: "json"
+#        loggerOutputPaths: [ "logs/app.log" ]
         eventEncoding: "json"
-        loggerOutputPaths: [ "logs/app.log" ]
         eventOutputPaths: [ "logs/event.log" ]
       prom:
         enabled: true
       meta:
+        enabled: true
+      trace:
         enabled: true
   - name: ssc-prom
     enabled: true
