@@ -2,10 +2,10 @@
 config:
   - name: ssc-config
     path: ".env"
-cert:
-  - name: my-certs
-    certPemPath: "certs/server.pem"
-    keyPemPath: "certs/server-key.pem"
+#cert:
+#  - name: my-certs
+#    certPemPath: "certs/server.pem"
+#    keyPemPath: "certs/server-key.pem"
 mysql:
   - name: test-db
     enabled: true
@@ -25,6 +25,10 @@ grpc:
     middleware:
       logging:
         enabled: true
+        loggerEncoding: "json"
+        eventEncoding: "json"
+        loggerOutputPaths: [ "logs/app.log" ]
+        eventOutputPaths: [ "logs/event.log" ]
       prom:
         enabled: true
       meta:
@@ -35,13 +39,6 @@ grpc:
     certEntry: "my-certs"
     prom:
       enabled: true
-    middleware:
-      logging:
-        enabled: true
-      prom:
-        enabled: true
-      meta:
-        enabled: true
   - name: ssc-app
     enabled: true
     port: 6060

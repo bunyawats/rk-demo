@@ -3,9 +3,10 @@ package service
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	repository "github.com/rookie-ninja/rk-demo/repository/gen"
-	"log"
+	rkentry "github.com/rookie-ninja/rk-entry/v2/entry"
 )
 
 type (
@@ -14,6 +15,14 @@ type (
 		ctx  context.Context
 	}
 )
+
+var (
+	logger *rkentry.LoggerEntry
+)
+
+func init() {
+	logger = rkentry.GlobalAppCtx.GetLoggerEntryDefault()
+}
 
 func NewSQLcService(conFun func() *sql.DB, ctx context.Context) *SQLcService {
 	return &SQLcService{
@@ -24,12 +33,14 @@ func NewSQLcService(conFun func() *sql.DB, ctx context.Context) *SQLcService {
 
 func (s *SQLcService) SelectAll() ([]repository.ListCustomersRow, error) {
 
+	logger.Info("Call SQLcService.SelectAll")
+
 	queries := repository.New(s.conn())
 	cusList, err := queries.ListCustomers(s.ctx)
 	if err != nil {
-		log.Print("SelectAll : ", err.Error())
+		logger.Info(fmt.Sprintf("SelectAll : ", err.Error()))
 	}
-	log.Println("Call SQLcService.SelectAll length: ", len(cusList))
+	logger.Info(fmt.Sprintf("Call SQLcService.SelectAll length: %v", len(cusList)))
 	return cusList, err
 }
 
@@ -42,12 +53,12 @@ func (s *SQLcService) InsertNewCustomer(cus *CustomerRecord) (int32, error) {
 		Age:   sql.NullInt32{Int32: int32(cus.Age), Valid: true},
 	})
 	if err != nil {
-		log.Println("InsertNewCustomer: ", err.Error())
+		logger.Info(fmt.Sprintf("InsertNewCustomer: %v", err.Error()))
 		return -1, err
 	}
 	cusID, err := result.LastInsertId()
 	if err != nil {
-		log.Println("InsertNewCustomer: ", err.Error())
+		logger.Info(fmt.Sprintf("InsertNewCustomer: %v", err.Error()))
 		return -1, err
 	}
 	return int32(cusID), nil
@@ -62,12 +73,12 @@ func (s *SQLcService) UpdateCustomer(cus *CustomerRecord) (int32, error) {
 		Cusid: cus.CusId,
 	})
 	if err != nil {
-		log.Println("UpdateCustomer : ", err.Error())
+		logger.Info(fmt.Sprintf("UpdateCustomer : %v", err.Error()))
 		return -1, err
 	}
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		log.Println("UpdateCustomer: ", err.Error())
+		logger.Info(fmt.Sprintf("UpdateCustomer: %v", err.Error()))
 		return -1, err
 	}
 	return int32(rowsAffected), nil
@@ -77,7 +88,7 @@ func (s *SQLcService) DeleteCustomer(cusId int32) (int32, error) {
 	queries := repository.New(s.conn())
 	err := queries.DeleteCustomer(s.ctx, cusId)
 	if err != nil {
-		log.Println("DeleteCustomer : ", err.Error())
+		logger.Info(fmt.Sprintf("DeleteCustomer : %v", err.Error()))
 		return 0, err
 	}
 	return 1, nil
