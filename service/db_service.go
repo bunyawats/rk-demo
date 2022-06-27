@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"log"
+	rkentry "github.com/rookie-ninja/rk-entry/v2/entry"
 )
 
 const (
@@ -45,7 +45,8 @@ func (s *DbService) SelectAll() ([]*CustomerRecord, error) {
 		}
 		customerList = append(customerList, &cus)
 	}
-	log.Println("Call DbService.SelectAll length: ", len(customerList))
+	logger := rkentry.GlobalAppCtx.GetLoggerEntry("my-logger")
+	logger.Info(fmt.Sprintf("Call DbService.SelectAll length: ", len(customerList)))
 	return customerList, nil
 
 }

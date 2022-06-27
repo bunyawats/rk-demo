@@ -20,11 +20,11 @@ logger:
     zap:
       outputPaths: ["logs/log.log"]
       encoding: json
-event:
-  - name: my-event
-    zap:
-      outputPaths: ["logs/event.log"]
-      encoding: json
+#event:
+#  - name: my-event
+#    zap:
+#      outputPaths: ["logs/event.log"]
+#      encoding: json
 grpc:
   - name: ssc-grpc
     enabled: true

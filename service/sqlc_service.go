@@ -16,10 +16,6 @@ type (
 	}
 )
 
-var (
-	logger *rkentry.LoggerEntry
-)
-
 func NewSQLcService(conFun func() *sql.DB, ctx context.Context) *SQLcService {
 	return &SQLcService{
 		conn: conFun,
@@ -29,7 +25,7 @@ func NewSQLcService(conFun func() *sql.DB, ctx context.Context) *SQLcService {
 
 func (s *SQLcService) SelectAll() ([]repository.ListCustomersRow, error) {
 
-	logger = rkentry.GlobalAppCtx.GetLoggerEntry("my-logger")
+	logger := rkentry.GlobalAppCtx.GetLoggerEntry("my-logger")
 	logger.Info("Call SQLcService.SelectAll")
 
 	queries := repository.New(s.conn())
@@ -43,7 +39,7 @@ func (s *SQLcService) SelectAll() ([]repository.ListCustomersRow, error) {
 
 func (s *SQLcService) InsertNewCustomer(cus *CustomerRecord) (int32, error) {
 
-	logger = rkentry.GlobalAppCtx.GetLoggerEntry("my-logger")
+	logger := rkentry.GlobalAppCtx.GetLoggerEntry("my-logger")
 	queries := repository.New(s.conn())
 	result, err := queries.CreateCustomer(s.ctx, repository.CreateCustomerParams{
 		Fname: sql.NullString{String: cus.Fname, Valid: true},
@@ -64,7 +60,7 @@ func (s *SQLcService) InsertNewCustomer(cus *CustomerRecord) (int32, error) {
 
 func (s *SQLcService) UpdateCustomer(cus *CustomerRecord) (int32, error) {
 
-	logger = rkentry.GlobalAppCtx.GetLoggerEntry("my-logger")
+	logger := rkentry.GlobalAppCtx.GetLoggerEntry("my-logger")
 	queries := repository.New(s.conn())
 	result, err := queries.UpdateCustomer(s.ctx, repository.UpdateCustomerParams{
 		Fname: sql.NullString{String: cus.Fname, Valid: true},
@@ -86,7 +82,7 @@ func (s *SQLcService) UpdateCustomer(cus *CustomerRecord) (int32, error) {
 
 func (s *SQLcService) DeleteCustomer(cusId int32) (int32, error) {
 
-	logger = rkentry.GlobalAppCtx.GetLoggerEntry("my-logger")
+	logger := rkentry.GlobalAppCtx.GetLoggerEntry("my-logger")
 	queries := repository.New(s.conn())
 	err := queries.DeleteCustomer(s.ctx, cusId)
 	if err != nil {
