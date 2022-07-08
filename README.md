@@ -290,7 +290,9 @@ $ sqlc generate
 
 ```shell script
 
-$ buf generate --path api/v2 --template buf.gen.v2.yaml
+$ buf ls-files
+$ buf generate --path api/v1 --template api/v1/buf.gen.yaml
+$ buf generate --path api/v2 --template api/v2/buf.gen.yaml
 ```
 
 ### Use rk-boot plugin for MySql database GORM library
