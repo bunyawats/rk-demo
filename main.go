@@ -43,6 +43,11 @@ func main() {
 	entry.AddRegFuncGw(greeterV1.RegisterGreeterHandlerFromEndpoint)
 	entry.AddRegFuncGw(greeterV2.RegisterGreeterHandlerFromEndpoint)
 
+	entry2 := rkgrpc.GetGrpcEntry("ssc-app")
+	entry2.AddRegFuncGrpc(registerGreeter)
+	entry2.AddRegFuncGw(greeterV1.RegisterGreeterHandlerFromEndpoint)
+	entry2.AddRegFuncGw(greeterV2.RegisterGreeterHandlerFromEndpoint)
+
 	// Bootstrap
 	boot.Bootstrap(context.TODO())
 	db = repository.NewDbConnectionRKDB()
