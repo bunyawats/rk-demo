@@ -6,6 +6,7 @@ import (
 	greeterV1 "github.com/rookie-ninja/rk-demo/api/gen/v1"
 	greeterV2 "github.com/rookie-ninja/rk-demo/api/gen/v2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 	"io"
 	"log"
@@ -16,7 +17,17 @@ import (
 func main() {
 	println("Call Customer Service")
 
+	tls := true
 	opts := grpc.WithTransportCredentials(insecure.NewCredentials())
+	if tls {
+		certFile := "./certs/ca.pem" // Certificate Authority Trust certificate
+		creds, sslErr := credentials.NewClientTLSFromFile(certFile, "")
+		if sslErr != nil {
+			log.Fatalf("Error while loading CA trust certificate: %v", sslErr)
+			return
+		}
+		opts = grpc.WithTransportCredentials(creds)
+	}
 
 	cc, err := grpc.Dial("localhost:8080", opts)
 	if err != nil {
@@ -43,7 +54,7 @@ func main() {
 	getAllCustomerV2(c2)
 	deleteExistCustomerV2(c2, cusId-1)
 	getAllCustomerV2(c2)
-	//getAllCustomerStreamV2(c2)
+	getAllCustomerStreamV2(c2)
 }
 
 func deleteExistCustomerV2(c greeterV2.CustomerClient, id int32) {

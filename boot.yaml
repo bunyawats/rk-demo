@@ -2,10 +2,10 @@
 config:
   - name: ssc-config
     path: ".env"
-#cert:
-#  - name: my-certs
-#    certPemPath: "certs/server.pem"
-#    keyPemPath: "certs/server-key.pem"
+cert:
+  - name: my-certs
+    certPemPath: "certs/server.pem"
+    keyPemPath: "certs/server-key.pem"
 mysql:
   - name: test-db
     enabled: true
