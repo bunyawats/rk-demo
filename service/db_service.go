@@ -16,7 +16,8 @@ const (
 
 type (
 	DbService struct {
-		DbConn func() *sql.DB
+		conn   func() *sql.DB
+		logger *rkentry.LoggerEntry
 	}
 
 	CustomerRecord struct {
@@ -27,10 +28,20 @@ type (
 	}
 )
 
+func NewDbService(conFun func() *sql.DB) *DbService {
+
+	logger := rkentry.GlobalAppCtx.GetLoggerEntry("my-logger")
+
+	return &DbService{
+		conn:   conFun,
+		logger: logger,
+	}
+}
+
 func (s *DbService) SelectAll() ([]*CustomerRecord, error) {
 
 	// Execute the query
-	results, err := s.DbConn().Query(selectAllCustomer)
+	results, err := s.conn().Query(selectAllCustomer)
 	if err != nil {
 		return nil, err
 	}
@@ -45,8 +56,7 @@ func (s *DbService) SelectAll() ([]*CustomerRecord, error) {
 		}
 		customerList = append(customerList, &cus)
 	}
-	logger := rkentry.GlobalAppCtx.GetLoggerEntry("my-logger")
-	logger.Info(fmt.Sprintf("Call DbService.SelectAll length: ", len(customerList)))
+	s.logger.Info(fmt.Sprintf("Call DbService.SelectAll length: %v", len(customerList)))
 	return customerList, nil
 
 }
@@ -55,7 +65,7 @@ func (s *DbService) InsertNewCustomer(cus *CustomerRecord) (int32, error) {
 
 	fmt.Println("Call DbService.InsertNewCustomer")
 
-	insertSmt, err := s.DbConn().Prepare(insertNewCustomer)
+	insertSmt, err := s.conn().Prepare(insertNewCustomer)
 	if err != nil {
 		return -1, err
 	}
@@ -82,7 +92,7 @@ func (s *DbService) UpdateCustomer(cus *CustomerRecord) (int32, error) {
 
 	fmt.Println("Call DbService.UpdateCustomer")
 
-	updateSmt, err := s.DbConn().Prepare(updateExistingCustomer)
+	updateSmt, err := s.conn().Prepare(updateExistingCustomer)
 	if err != nil {
 		return -1, err
 	}
@@ -110,7 +120,7 @@ func (s *DbService) DeleteCustomer(cusId int32) (int32, error) {
 
 	fmt.Println("Call DbService.DeleteCustomer")
 
-	deleteSmt, err := s.DbConn().Prepare(deleteExistingCustomer)
+	deleteSmt, err := s.conn().Prepare(deleteExistingCustomer)
 	if err != nil {
 		return -1, err
 	}

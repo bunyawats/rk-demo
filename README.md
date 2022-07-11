@@ -320,3 +320,10 @@ grpcurl -v -d '{"name":"bunyawat"}' -insecure localhost:8080 api.v2.Greeter.Hell
 ```go
 $ RK_MYSQL_0_USER=bunyawat123 go run .
 ```
+
+### Use rk-boot plugin for MongoDB database 
+
+```go
+$ go get github.com/rookie-ninja/rk-db/mongodb
+$ go get github.com/rs/xid
+```

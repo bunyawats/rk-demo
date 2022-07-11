@@ -8,6 +8,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"github.com/rookie-ninja/rk-boot/v2"
 	greeterV1 "github.com/rookie-ninja/rk-demo/api/gen/v1"
 	greeterV2 "github.com/rookie-ninja/rk-demo/api/gen/v2"
@@ -16,19 +17,28 @@ import (
 	"github.com/rookie-ninja/rk-demo/repository"
 	"github.com/rookie-ninja/rk-demo/service"
 	rkgrpc "github.com/rookie-ninja/rk-grpc/v2/boot"
+	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 	"os"
 )
 
 var (
-	db          *sql.DB
+	mysqlDB *sql.DB
+	mongoDB *mongo.Database
+
 	dbService   *service.DbService
 	sqlcService *service.SQLcService
-	boot        *rkboot.Boot
+	mongoSerice *service.MongoService
+
+	boot *rkboot.Boot
 )
 
-func getDbConn() *sql.DB {
-	return db
+func getMySqlDbConn() *sql.DB {
+	return mysqlDB
+}
+
+func getMongDbConn() *mongo.Database {
+	return mongoDB
 }
 
 func main() {
@@ -50,8 +60,10 @@ func main() {
 
 	// Bootstrap
 	boot.Bootstrap(context.TODO())
-	db = repository.NewDbConnectionRKDB()
-	defer db.Close()
+	mysqlDB = repository.NewMySqlDbConnectionRKDB()
+	defer mysqlDB.Close()
+
+	mongoDB = repository.NewMongoDbConnectionRKDB()
 
 	testService()
 
@@ -61,8 +73,9 @@ func main() {
 
 func registerGreeter(server *grpc.Server) {
 
-	dbService = &service.DbService{DbConn: getDbConn}
-	sqlcService = service.NewSQLcService(getDbConn, context.TODO())
+	dbService = service.NewDbService(getMySqlDbConn)
+	sqlcService = service.NewSQLcService(getMySqlDbConn, context.TODO())
+	mongoSerice = service.NewMongoService(getMongDbConn, context.TODO())
 
 	greeterV1.RegisterGreeterServer(server, &v1.GreeterServer{})
 	greeterV1.RegisterCustomerServer(server, v1.NewCustomerServer(context.TODO(), dbService))
@@ -77,4 +90,8 @@ func registerGreeter(server *grpc.Server) {
 func testService() {
 	dbService.SelectAll()
 	sqlcService.SelectAll()
+	user := mongoSerice.CreateUser("Bunyawat")
+	id := user.Id.Hex()
+	user = mongoSerice.GetUser(id)
+	fmt.Printf("User id: %v is %v", id, user)
 }

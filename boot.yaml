@@ -15,6 +15,12 @@ mysql:
     pass: test
     database:
       - name: test
+mongo:
+  - name: my-mongo
+    enabled: true
+    simpleURI: "mongodb://localhost:27017"
+    database:
+      - name: test
 logger:
   - name: my-logger
     zap:

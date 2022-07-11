@@ -3,8 +3,10 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	rkmongo "github.com/rookie-ninja/rk-db/mongodb"
 	rkmysql "github.com/rookie-ninja/rk-db/mysql"
 	rkentry "github.com/rookie-ninja/rk-entry/v2/entry"
+	"go.mongodb.org/mongo-driver/mongo"
 	"log"
 )
 
@@ -56,7 +58,7 @@ func NewDbConnectionEnv(dbCfg *DbConnCfg) *sql.DB {
 	return dbConn
 }
 
-func NewDbConnectionRKDB() *sql.DB {
+func NewMySqlDbConnectionRKDB() *sql.DB {
 
 	mysqlEntry := rkmysql.GetMySqlEntry("test-db")
 	testDb := mysqlEntry.GetDB("test")
@@ -72,4 +74,11 @@ func NewDbConnectionRKDB() *sql.DB {
 	log.Println("Init Gorm connection success")
 
 	return dbConn
+}
+
+func NewMongoDbConnectionRKDB() *mongo.Database {
+
+	db := rkmongo.GetMongoDB("my-mongo", "test")
+
+	return db
 }
