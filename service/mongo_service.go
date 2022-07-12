@@ -88,14 +88,68 @@ func (s *MongoService) CreateUser(name string) *User {
 	return user
 }
 
-func (s *MongoService) ListUser() {
+func (s *MongoService) ListUser() *[]*User {
+
+	s.logger.Info("Call MongoService.ListUser")
+
+	userList := make([]*User, 0)
+
+	cursor, err := s.getUserCollection().Find(s.ctx, bson.D{})
+	if err != nil {
+		s.logger.Error(fmt.Sprintf("Error while find user list in MongoDB: %v", err.Error()))
+	}
+
+	if err = cursor.All(s.ctx, &userList); err != nil {
+		s.logger.Error(fmt.Sprintf("Error while decode user list in MongoDB cursor: %v", err.Error()))
+	}
+
+	return &userList
+}
+
+func (s *MongoService) UpdateUser(id string, name string) int64 {
+
+	s.logger.Info("Call MongoService.UpdateUser")
+
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		s.logger.Error(fmt.Sprintf("Error while create objectId: %v", err.Error()))
+	}
+	u := &User{
+		Id:   objectId,
+		Name: name,
+	}
+	res, err := s.getUserCollection().UpdateOne(
+		s.ctx,
+		bson.M{
+			"_id": objectId,
+		},
+		bson.D{
+			{
+				"$set", bson.D{
+					{"name", u.Name},
+				},
+			},
+		},
+	)
+	if err != nil {
+		s.logger.Error(fmt.Sprintf("Error while update user from MangoD : %v", err.Error()))
+	}
+	return res.ModifiedCount
 
 }
 
-func (s *MongoService) UpdateUser() {
+func (s *MongoService) DeleteUser(id string) int64 {
 
-}
+	s.logger.Info("Call MongoService.DeleteUser")
 
-func (s *MongoService) DeleteUser() {
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		s.logger.Error(fmt.Sprintf("Error while create objectId: %v", err.Error()))
+	}
 
+	res, err := s.getUserCollection().DeleteOne(s.ctx, bson.M{"_id": objectId})
+	if err != nil {
+		s.logger.Error(fmt.Sprintf("Error while delete user from MangoD : %v", err.Error()))
+	}
+	return res.DeletedCount
 }

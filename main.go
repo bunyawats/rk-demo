@@ -94,4 +94,14 @@ func testService() {
 	id := user.Id.Hex()
 	user = mongoSerice.GetUser(id)
 	fmt.Printf("User id: %v is %v", id, user)
+
+	userList := mongoSerice.ListUser()
+	for ix, u := range *userList {
+		fmt.Printf("User index: %v is %v \n", ix, u)
+	}
+	modifiedCount := mongoSerice.UpdateUser(id, "Waraporn")
+	fmt.Printf("Modify count: %v ", modifiedCount)
+	//deleteCount := mongoSerice.DeleteUser(id)
+	//fmt.Printf("Delete count: %v ", deleteCount)
+
 }
