@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	user_collection = "user"
+	customer_collection = "customer"
 )
 
 type (
@@ -21,9 +21,11 @@ type (
 		logger  *rkentry.LoggerEntry
 	}
 
-	User struct {
-		Id   primitive.ObjectID `bson:"_id"`
-		Name string             `bson:"name"`
+	CustomerDoc struct {
+		CusId primitive.ObjectID `bson:"_id"`
+		Fname string             `bson:"fname"`
+		Lname string             `bson:"lname"`
+		Age   int                `bson:"age"`
 	}
 )
 
@@ -39,18 +41,18 @@ func NewMongoService(conFun func() *mongo.Database, ctx context.Context) *MongoS
 	return service
 }
 
-func (s *MongoService) getUserCollection() *mongo.Collection {
+func (s *MongoService) getCustomerCollection() *mongo.Collection {
 
 	opts := options.CreateCollection()
-	err := s.mongoDB().CreateCollection(s.ctx, user_collection, opts)
+	err := s.mongoDB().CreateCollection(s.ctx, customer_collection, opts)
 	if err != nil {
 		fmt.Println("collection exists may be, continue")
 	}
-	return s.mongoDB().Collection(user_collection)
+	return s.mongoDB().Collection(customer_collection)
 
 }
 
-func (s *MongoService) GetUser(id string) *User {
+func (s *MongoService) GetCustomer(id string) *CustomerDoc {
 
 	s.logger.Info("Call MongoService.GetUser")
 
@@ -59,97 +61,94 @@ func (s *MongoService) GetUser(id string) *User {
 		s.logger.Error(fmt.Sprintf("Error while create objectId: %v", err.Error()))
 	}
 
-	res := s.getUserCollection().FindOne(s.ctx, bson.M{"_id": objectId})
+	res := s.getCustomerCollection().FindOne(s.ctx, bson.M{"_id": objectId})
 	if res.Err() != nil {
-		s.logger.Error(fmt.Sprintf("Error while get user from MongoDB: %v", res.Err().Error()))
+		s.logger.Error(fmt.Sprintf("Error while get customer from MongoDB: %v", res.Err().Error()))
 	}
-	user := &User{}
-	err = res.Decode(user)
+	customer := &CustomerDoc{}
+	err = res.Decode(customer)
 	if err != nil {
-		s.logger.Error(fmt.Sprintf("Error while get user from MongoDB: %v", err.Error()))
+		s.logger.Error(fmt.Sprintf("Error while get customer from MongoDB: %v", err.Error()))
 	}
 
-	return user
+	return customer
 }
 
-func (s *MongoService) CreateUser(name string) *User {
+func (s *MongoService) CreateCustomer(c *CustomerDoc) (string, error) {
 
 	s.logger.Info("Call MongoService.CreateUser")
 
-	user := &User{
-		Id:   primitive.NewObjectID(),
-		Name: name,
-	}
-	_, err := s.getUserCollection().InsertOne(s.ctx, user)
+	c.CusId = primitive.NewObjectID()
+	_, err := s.getCustomerCollection().InsertOne(s.ctx, c)
 	if err != nil {
-		s.logger.Error(fmt.Sprintf("Error while create user in MongoDB: %v", err.Error()))
+		s.logger.Error(fmt.Sprintf("Error while create c in MongoDB: %v", err.Error()))
+		return "", err
 	}
 
-	return user
+	return c.CusId.Hex(), nil
 }
 
-func (s *MongoService) ListUser() *[]*User {
+func (s *MongoService) ListCustomer() (*[]*CustomerDoc, error) {
 
-	s.logger.Info("Call MongoService.ListUser")
+	s.logger.Info("Call MongoService.ListCustomer")
 
-	userList := make([]*User, 0)
+	userList := make([]*CustomerDoc, 0)
 
-	cursor, err := s.getUserCollection().Find(s.ctx, bson.D{})
+	cursor, err := s.getCustomerCollection().Find(s.ctx, bson.D{})
 	if err != nil {
-		s.logger.Error(fmt.Sprintf("Error while find user list in MongoDB: %v", err.Error()))
+		s.logger.Error(fmt.Sprintf("Error while find customer list in MongoDB: %v", err.Error()))
+		return nil, err
 	}
 
 	if err = cursor.All(s.ctx, &userList); err != nil {
-		s.logger.Error(fmt.Sprintf("Error while decode user list in MongoDB cursor: %v", err.Error()))
+		s.logger.Error(fmt.Sprintf("Error while decode customer list in MongoDB cursor: %v", err.Error()))
+		return nil, err
 	}
 
-	return &userList
+	return &userList, nil
 }
 
-func (s *MongoService) UpdateUser(id string, name string) int64 {
+func (s *MongoService) UpdateCustomer(c *CustomerDoc) (int64, error) {
 
-	s.logger.Info("Call MongoService.UpdateUser")
+	s.logger.Info("Call MongoService.UpdateCustomer")
 
-	objectId, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		s.logger.Error(fmt.Sprintf("Error while create objectId: %v", err.Error()))
-	}
-	u := &User{
-		Id:   objectId,
-		Name: name,
-	}
-	res, err := s.getUserCollection().UpdateOne(
+	res, err := s.getCustomerCollection().UpdateOne(
 		s.ctx,
 		bson.M{
-			"_id": objectId,
+			"_id": c.CusId,
 		},
 		bson.D{
 			{
 				"$set", bson.D{
-					{"name", u.Name},
+					{"fname", c.Fname},
+					{"lname", c.Lname},
+					{"age", c.Age},
 				},
 			},
 		},
 	)
 	if err != nil {
 		s.logger.Error(fmt.Sprintf("Error while update user from MangoD : %v", err.Error()))
+		return 0, err
 	}
-	return res.ModifiedCount
+	return res.ModifiedCount, nil
 
 }
 
-func (s *MongoService) DeleteUser(id string) int64 {
+func (s *MongoService) DeleteCustomer(id string) (int64, error) {
 
-	s.logger.Info("Call MongoService.DeleteUser")
+	s.logger.Info("Call MongoService.DeleteCustomer")
 
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		s.logger.Error(fmt.Sprintf("Error while create objectId: %v", err.Error()))
+		return 0, err
 	}
 
-	res, err := s.getUserCollection().DeleteOne(s.ctx, bson.M{"_id": objectId})
+	res, err := s.getCustomerCollection().DeleteOne(s.ctx, bson.M{"_id": objectId})
 	if err != nil {
 		s.logger.Error(fmt.Sprintf("Error while delete user from MangoD : %v", err.Error()))
+		return 0, err
 	}
-	return res.DeletedCount
+	return res.DeletedCount, nil
 }

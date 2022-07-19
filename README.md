@@ -252,7 +252,7 @@ evans -p 8080 -r
 ### Run gRPC client to call Customer service
 
 ```go
-$ go run cmd/customer_client.go
+$ go run cmd/customer_client.go cmd/test_customer_v1.go cmd/test_customer_v2.go cmd/test_customer_v3.go
 ```
 
 ### Use MySql database driver and Viper library

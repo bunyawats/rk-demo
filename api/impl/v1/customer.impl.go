@@ -13,7 +13,7 @@ type CustomerServer struct {
 }
 
 var (
-	staticCustomerList = []*greeterV1.CustomerModel{
+	_ = []*greeterV1.CustomerModel{
 		{
 			CusId:     1,
 			FirstName: "Bunyawat",

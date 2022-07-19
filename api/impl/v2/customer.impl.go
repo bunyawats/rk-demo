@@ -13,23 +13,6 @@ type CustomerServer struct {
 	sqlcService *service.SQLcService
 }
 
-var (
-	staticCustomerList = []*greeterV2.CustomerModel{
-		{
-			CusId:     1,
-			FirstName: "Bunyawat",
-			LastName:  "Singchai",
-			Age:       51,
-		},
-		{
-			CusId:     2,
-			FirstName: "Waraporn",
-			LastName:  "Singchai",
-			Age:       44,
-		},
-	}
-)
-
 func NewCustomerServer(cx context.Context, dbs *service.SQLcService) *CustomerServer {
 	return &CustomerServer{
 		context:     cx,
@@ -132,7 +115,10 @@ func (server *CustomerServer) ReadAllStream(
 			LastName:  cus.Lname.String,
 			Age:       cus.Age.Int32,
 		}
-		resStream.Send(res)
+		err := resStream.Send(res)
+		if err != nil {
+			return err
+		}
 		time.Sleep(time.Second * 2)
 	}
 

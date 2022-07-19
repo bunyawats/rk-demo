@@ -12,13 +12,16 @@ import (
 	"github.com/rookie-ninja/rk-boot/v2"
 	greeterV1 "github.com/rookie-ninja/rk-demo/api/gen/v1"
 	greeterV2 "github.com/rookie-ninja/rk-demo/api/gen/v2"
+	greeterV3 "github.com/rookie-ninja/rk-demo/api/gen/v3"
 	"github.com/rookie-ninja/rk-demo/api/impl/v1"
 	"github.com/rookie-ninja/rk-demo/api/impl/v2"
+	v3 "github.com/rookie-ninja/rk-demo/api/impl/v3"
 	"github.com/rookie-ninja/rk-demo/repository"
 	"github.com/rookie-ninja/rk-demo/service"
 	rkgrpc "github.com/rookie-ninja/rk-grpc/v2/boot"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
+	"log"
 	"os"
 )
 
@@ -43,7 +46,10 @@ func getMongDbConn() *mongo.Database {
 
 func main() {
 
-	os.Setenv("RK_MYSQL_0_USER", "bunyawat444")
+	err := os.Setenv("RK_MYSQL_0_USER", "bunyawat444")
+	if err != nil {
+		return
+	}
 
 	boot = rkboot.NewBoot()
 
@@ -52,16 +58,23 @@ func main() {
 	entry.AddRegFuncGrpc(registerGreeter)
 	entry.AddRegFuncGw(greeterV1.RegisterGreeterHandlerFromEndpoint)
 	entry.AddRegFuncGw(greeterV2.RegisterGreeterHandlerFromEndpoint)
+	entry.AddRegFuncGw(greeterV3.RegisterGreeterHandlerFromEndpoint)
 
 	entry2 := rkgrpc.GetGrpcEntry("ssc-app")
 	entry2.AddRegFuncGrpc(registerGreeter)
 	entry2.AddRegFuncGw(greeterV1.RegisterGreeterHandlerFromEndpoint)
 	entry2.AddRegFuncGw(greeterV2.RegisterGreeterHandlerFromEndpoint)
+	entry2.AddRegFuncGw(greeterV3.RegisterGreeterHandlerFromEndpoint)
 
 	// Bootstrap
 	boot.Bootstrap(context.TODO())
 	mysqlDB = repository.NewMySqlDbConnectionRKDB()
-	defer mysqlDB.Close()
+	defer func(mysqlDB *sql.DB) {
+		err := mysqlDB.Close()
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+	}(mysqlDB)
 
 	mongoDB = repository.NewMongoDbConnectionRKDB()
 
@@ -83,25 +96,40 @@ func registerGreeter(server *grpc.Server) {
 	greeterV2.RegisterGreeterServer(server, &v2.GreeterServer{})
 	greeterV2.RegisterCustomerServer(server, v2.NewCustomerServer(context.TODO(), sqlcService))
 
+	greeterV3.RegisterGreeterServer(server, &v3.GreeterServer{})
+	greeterV3.RegisterCustomerServer(server, v3.NewCustomerServer(context.TODO(), mongoSerice))
+
 	//	reflection.Register(server)
 
 }
 
 func testService() {
-	dbService.SelectAll()
-	sqlcService.SelectAll()
-	user := mongoSerice.CreateUser("Bunyawat")
-	id := user.Id.Hex()
-	user = mongoSerice.GetUser(id)
-	fmt.Printf("User id: %v is %v", id, user)
-
-	userList := mongoSerice.ListUser()
-	for ix, u := range *userList {
-		fmt.Printf("User index: %v is %v \n", ix, u)
+	_, err := dbService.SelectAll()
+	if err != nil {
+		return
 	}
-	modifiedCount := mongoSerice.UpdateUser(id, "Waraporn")
+	_, err = sqlcService.SelectAll()
+	if err != nil {
+		return
+	}
+
+	c := &service.CustomerDoc{
+		Fname: "Bunyawat",
+		Lname: "Singchai",
+		Age:   51,
+	}
+	cusId, _ := mongoSerice.CreateCustomer(c)
+	c = mongoSerice.GetCustomer(cusId)
+	fmt.Printf("Customer id: %v is %v", cusId, c)
+
+	customerList, _ := mongoSerice.ListCustomer()
+	for ix, u := range *customerList {
+		fmt.Printf("Customer id: %v is %v \n", ix, u)
+	}
+	c.Fname = "Waraporn"
+	modifiedCount, _ := mongoSerice.UpdateCustomer(c)
 	fmt.Printf("Modify count: %v ", modifiedCount)
-	//deleteCount := mongoSerice.DeleteUser(id)
-	//fmt.Printf("Delete count: %v ", deleteCount)
+	deleteCount, _ := mongoSerice.DeleteCustomer(cusId)
+	fmt.Printf("Delete count: %v ", deleteCount)
 
 }
