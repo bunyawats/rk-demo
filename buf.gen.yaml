@@ -13,11 +13,11 @@ plugins:
     out: api/gen
     opt:
       - paths=source_relative
-      - grpc_api_configuration=api/v2/gw_mapping.yaml
+#      - grpc_api_configuration=api/v3/gw_mapping.yaml_
       - allow_repeated_fields_in_body=true
       - generate_unbound_methods=true
   - name: openapiv2
     out: api/gen
     opt:
-      - grpc_api_configuration=api/v2/gw_mapping.yaml
+#      - grpc_api_configuration=api/v3/gw_mapping.yaml_
       - allow_repeated_fields_in_body=true

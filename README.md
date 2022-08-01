@@ -78,13 +78,13 @@ plugins:
     out: api/gen
     opt:
       - paths=source_relative
-      - grpc_api_configuration=api/v1/gw_mapping.yaml
+      - grpc_api_configuration=api/v1/gw_mapping.yaml_
       - allow_repeated_fields_in_body=true
       - generate_unbound_methods=true
   - name: openapiv2
     out: api/gen
     opt:
-      - grpc_api_configuration=api/v1/gw_mapping.yaml
+      - grpc_api_configuration=api/v1/gw_mapping.yaml_
       - allow_repeated_fields_in_body=true
 ```
 
@@ -291,8 +291,8 @@ $ sqlc generate
 ```shell script
 
 $ buf ls-files
-$ buf generate --path api/v1 --template api/v1/buf.gen.yaml
-$ buf generate --path api/v2 --template api/v2/buf.gen.yaml
+$ buf generate  api
+$ buf generate --path api/v2 --template api/v2/buf.gen.yaml_
 ```
 
 ### Use rk-boot plugin for MySql database GORM library
