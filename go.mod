@@ -5,11 +5,11 @@ go 1.18
 require (
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.1
-	github.com/rookie-ninja/rk-boot/v2 v2.2.2
-	github.com/rookie-ninja/rk-db/mongodb v1.2.2
-	github.com/rookie-ninja/rk-db/mysql v1.2.2
-	github.com/rookie-ninja/rk-entry/v2 v2.2.2
-	github.com/rookie-ninja/rk-grpc/v2 v2.2.2
+	github.com/rookie-ninja/rk-boot/v2 v2.2.3
+	github.com/rookie-ninja/rk-db/mongodb v1.2.3
+	github.com/rookie-ninja/rk-db/mysql v1.2.3
+	github.com/rookie-ninja/rk-entry/v2 v2.2.3
+	github.com/rookie-ninja/rk-grpc/v2 v2.2.3
 	go.mongodb.org/mongo-driver v1.10.0
 	google.golang.org/grpc v1.48.0
 	google.golang.org/protobuf v1.28.1
@@ -70,7 +70,7 @@ require (
 	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
 	golang.org/x/sys v0.0.0-20220731174439-a90be440212d // indirect
 	golang.org/x/text v0.3.7 // indirect
-	google.golang.org/genproto v0.0.0-20220728213248-dd149ef739b9 // indirect
+	google.golang.org/genproto v0.0.0-20220801145646-83ce21fca29f // indirect
 	gopkg.in/ini.v1 v1.66.6 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
