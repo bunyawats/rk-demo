@@ -15,8 +15,8 @@ func TestCustomerV1(cc *grpc.ClientConn) {
 	getAllCustomer(c)
 	updateExistCustomer(c, cusId)
 	getAllCustomer(c)
-	deleteExistCustomer(c, cusId)
-	getAllCustomer(c)
+	//deleteExistCustomer(c, cusId)
+	//getAllCustomer(c)
 }
 
 func deleteExistCustomer(c greeterV1.CustomerClient, id int32) {
