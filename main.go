@@ -44,12 +44,14 @@ func getMongDbConn() *mongo.Database {
 	return mongoDB
 }
 
-func main() {
-
+func init() {
 	err := os.Setenv("RK_MYSQL_0_USER", "bunyawat444")
 	if err != nil {
 		return
 	}
+}
+
+func main() {
 
 	boot = rkboot.NewBoot()
 
