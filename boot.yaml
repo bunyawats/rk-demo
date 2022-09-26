@@ -34,7 +34,7 @@ logger:
 grpc:
   - name: ssc-grpc
     enabled: true
-    port: 8080
+    port: 8082
     enableReflection: true
     enableRkGwOption: true
     certEntry: "my-certs"

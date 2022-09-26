@@ -45,7 +45,7 @@ func getMongDbConn() *mongo.Database {
 }
 
 func init() {
-	err := os.Setenv("RK_MYSQL_0_USER", "bunyawat444")
+	err := os.Setenv("RK_MYSQL_0_USER", "test")
 	if err != nil {
 		return
 	}
